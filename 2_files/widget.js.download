@@ -1,0 +1,2004 @@
+/*! Jim 2.0 Widget v0.3.29 — (c) GymBeam | Built 2026-11-06T14:04:22.275Z */
+(()=>{var Ce=`/* \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+   Jim 2.0 \u2014 AI Shopping & Support Assistant
+   V3 "Odv\xE1\u017Eny / Character" \u2014 midnight header, glass-orb avatar,
+   asymetrick\xE9 bubliny, oran\u017Eov\xFD accent. (design-handoff-v3)
+   \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550 */
+
+/* \u2500\u2500\u2500\u2500\u2500 V3 design tokens (docs/design-handoff-v3/README.md) \u2500\u2500\u2500\u2500\u2500 */
+:root {
+  /* Brand */
+  --jim-orange:       #FF3C00;   /* primary accent: send CTA, inline links, focus ring */
+  --jim-orange-deep:  #E03000;   /* hover/active pre orange */
+  --jim-orange-soft:  #FFB99E;   /* svetlej\u0161ia oran\u017Eov\xE1 pre linky na tmavom (user bubble) */
+  --jim-aqua:         #E9F9FF;   /* AI pill bg, chip bg, glint */
+  --jim-aqua-deep:    #DAF1FA;   /* chip hover bg */
+  --jim-midnight:     #002123;   /* primary text, header bar, user bubble */
+  --jim-midnight-2:   #1A3739;   /* gradient stop, icon hover */
+  --jim-midnight-3:   #466263;   /* secondary text */
+  --jim-line:         #E6E8E9;   /* dividers, borders */
+  --jim-surface:      #FFFFFF;   /* base surface */
+  --jim-sunken:       #F7F8F9;   /* composer field bg */
+  --jim-success:      #3E9B4F;   /* status dot */
+
+  /* Typography */
+  --jim-font: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+              Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  /* Radii */
+  --jim-r-sm: 8px;
+  --jim-r-md: 12px;
+  --jim-r-lg: 16px;       /* floating window */
+  --jim-r-xl: 18px;       /* centered window */
+  --jim-r-bubble: 18px;
+  --jim-r-pill: 999px;
+
+  /* Shadows */
+  --jim-shadow-floating: 0 24px 60px rgba(0,33,35,.18),
+                         0 6px 16px rgba(0,33,35,.10);
+  --jim-shadow-centered: 0 40px 80px rgba(0,0,0,.35),
+                         0 8px 24px rgba(0,0,0,.18);
+}
+
+/* Reset pre v\u0161etky Jim elementy.
+   Font matchuje GymBeam design system (Inter) \u2014 rovnak\xFD ako na PDP. */
+[class^="jim2-"], [id^="jim2-"] {
+  box-sizing: border-box;
+  font-family: var(--jim-font);
+  line-height: 1.5;
+}
+
+/* V3 pulse anim\xE1cia pre AI pill bodku (README "jim-pulse"). */
+@keyframes jim-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: .55; transform: scale(.85); }
+}
+
+/* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+   LAUNCHER (bottom-right bubble)
+   Jednoduch\xFD okr\xFAhly button 56\xD756 s ve\u013Ek\xFDm "J".
+   \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+/* Launcher \u2014 V3 glass-orb bublina (design-handoff-jim-launcher).
+   56\xD756 midnight gradient orb + italic "j" monogram + orange spark + pulse ring.
+   !important + appearance:none kv\xF4li WordPress / agres\xEDvnym site stylom. */
+.jim2-launcher,
+.jim2-launcher:hover,
+.jim2-launcher:focus,
+.jim2-launcher:active {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 99990;
+  width: 56px;
+  height: 56px;
+  background: #000 !important;
+  background-color: #000 !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  outline: none !important;
+  box-shadow: 0 10px 24px rgba(0,33,35,.35),
+              0 2px 6px rgba(0,33,35,.22),
+              inset 0 1px 0 rgba(255,255,255,.15),
+              inset 0 -2px 6px rgba(0,0,0,.35) !important;
+  padding: 0 !important;
+  margin: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--jim-font);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  /* transform pre tap-feedback (r\xFDchle), right pre scroll tuck (pomal\xE9 easing) */
+  transition: transform .12s ease-out, right .4s cubic-bezier(.22, 1, .36, 1);
+}
+.jim2-launcher:active { transform: scale(.96); }
+
+/* Pulse ring \u2014 jemn\xFD oran\u017Eov\xFD d\xF4raz. Subt\xEDlny; ak by ru\u0161il, d\xE1 sa vypn\xFA\u0165. */
+.jim2-launcher-pulse {
+  position: absolute;
+  inset: -2px;
+  border-radius: 999px;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, .35);
+  animation: jim-launcher-pulse 2.6s ease-out infinite;
+  pointer-events: none;
+}
+@keyframes jim-launcher-pulse {
+  0%   { box-shadow: 0 0 0 0    rgba(0, 0, 0, .35); }
+  70%  { box-shadow: 0 0 0 14px rgba(0, 0, 0, 0); }
+  100% { box-shadow: 0 0 0 0    rgba(0, 0, 0, 0); }
+}
+
+/* G logo s iskrami v launcheri \u2014 biele, ~72% kruhu (ako Figma) */
+.jim2-launcher .jim2-orb-glyph {
+  width: 50px;
+  height: 50px;
+  display: block;
+}
+.jim2-launcher .jim2-orb-glyph path { fill: #fff; }
+
+/* prefers-reduced-motion \u2014 bez pulse a bez tuck anim\xE1cie */
+@media (prefers-reduced-motion: reduce) {
+  .jim2-launcher,
+  .jim2-launcher-pulse { animation: none; transition: none; }
+}
+
+/* Skry launcher ke\u010F je assistant otvoren\xFD */
+.jim2-overlay-open .jim2-launcher {
+  display: none !important;
+}
+
+/* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+   ENTRY POINTS \u2014 CTA tla\u010Didl\xE1
+   \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.jim2-entry {
+  margin: 16px 0;
+}
+
+/* Primary CTA */
+.jim2-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+.jim2-cta-primary {
+  background: #000;
+  color: white;
+  padding: 12px 20px;
+  font-size: 14px;
+}
+.jim2-cta-primary:hover {
+  background: #1a1a1a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+.jim2-cta-large {
+  padding: 14px 28px;
+  font-size: 16px;
+  border-radius: 12px;
+}
+.jim2-cta-secondary {
+  background: white;
+  color: #000;
+  border: 2px solid #000;
+  padding: 10px 18px;
+  font-size: 14px;
+}
+.jim2-cta-secondary:hover {
+  background: var(--jim-aqua);
+}
+.jim2-cta-subtle {
+  background: transparent;
+  color: #888;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.jim2-cta-subtle:hover {
+  color: #000;
+}
+.jim2-cta-wide {
+  width: 100%;
+  justify-content: center;
+}
+.jim2-cta-icon {
+  font-size: 18px;
+}
+.jim2-cta-arrow {
+  transition: transform 0.2s;
+}
+.jim2-cta-subtle:hover .jim2-cta-arrow {
+  transform: translateX(4px);
+}
+
+/* PDP entry \u2014 pod "Prida\u0165 do ko\u0161\xEDka" */
+.jim2-entry-pdp {
+  margin-top: 16px;
+}
+
+/* Smart questions (PDP) \u2014 Amazon Rufus \u0161t\xFDl v GymBeam farb\xE1ch */
+.jim2-smart-questions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.jim2-smart-q {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--jim-aqua);
+  color: #000;
+  border: 2px solid #000;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-radius: 14px;
+  text-align: left;
+  text-decoration: none;
+  line-height: 1.3;
+}
+.jim2-smart-q:hover {
+  background: var(--jim-aqua-deep);
+}
+.jim2-smart-q .jim2-q-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #000;
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  object-fit: contain;
+}
+/* Posledn\xE1 ot\xE1zka \u2014 rovnak\xFD aqua \u0161t\xFDl (bez oran\u017Eov\xE9ho akcentu) */
+.jim2-smart-q--accent {
+  background: var(--jim-aqua);
+  color: #000;
+  border-color: #000;
+}
+.jim2-smart-q--accent:hover {
+  background: var(--jim-aqua-deep);
+}
+
+/* Homepage hero CTA */
+.jim2-hero-cta {
+  background: linear-gradient(135deg, #FFF5F0 0%, #FFFFFF 100%);
+  border: 1.5px solid #FFD6C4;
+  border-radius: 16px;
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.jim2-hero-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin-bottom: 4px;
+}
+.jim2-hero-subtitle {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Account CTAs */
+.jim2-account-ctas {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+/* Cart \u2014 minim\xE1lna UI */
+.jim2-entry-cart {
+  text-align: center;
+  padding: 8px;
+  border-top: 1px solid #eee;
+  margin-top: 8px;
+}
+
+/* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+   FULLSCREEN OVERLAY
+   \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+/* Overlay = scrim pre CENTERED m\xF3d (popup). Midnight tint + jemn\xFD blur. */
+.jim2-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(0, 33, 35, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: jim2-fadeIn 0.25s ease;
+  backdrop-filter: blur(2px);
+}
+.jim2-overlay.jim2-closing {
+  animation: jim2-fadeOut 0.25s ease forwards;
+}
+
+@keyframes jim2-fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes jim2-fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Assistant container \u2014 CENTERED m\xF3d (Mode A): 720\xD7640, radius 18. */
+.jim2-assistant {
+  width: 100%;
+  max-width: 900px;         /* desktop \u2014 alza-like pomer (~1.3:1), menej "do str\xE1n" */
+  height: 90vh;
+  max-height: 690px;
+  background: white;
+  border-radius: var(--jim-r-xl);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--jim-shadow-centered);
+  animation: jim2-slideUp 0.22s cubic-bezier(.2,.8,.2,1);
+}
+
+@keyframes jim2-slideUp {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* \u2500\u2500\u2500\u2500\u2500 Header (V3 \u2014 midnight bar) \u2500\u2500\u2500\u2500\u2500 */
+.jim2-a-header {
+  background: #000;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.jim2-a-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+.jim2-a-header-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.jim2-a-title {
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.2;
+}
+.jim2-a-subtitle {
+  color: rgba(255,255,255,0.85);
+  font-size: 11.5px;
+  font-weight: 600;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.jim2-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--jim-r-pill);
+  background: var(--jim-success);
+  flex-shrink: 0;
+}
+
+/* AI pill \u2014 "\u2726 AI asistent" */
+.jim2-ai-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--jim-r-pill);
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.jim2-ai-pill .jim2-pulse {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--jim-r-pill);
+  background: var(--jim-orange);
+  animation: jim-pulse 2s ease-in-out infinite;
+}
+
+/* Header action buttons (reset / maximize / minimize / close) */
+.jim2-h-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--jim-r-sm);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.7);
+  transition: background 0.15s, color 0.15s;
+  padding: 0;
+}
+.jim2-h-btn:hover {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
+.jim2-h-btn svg {
+  width: 22px;
+  height: 22px;
+}
+/* Figma Material ikony s\xFA tenk\xE9 (wght400) \u2014 zhrubnutie cez stroke, aby sedeli s n\xE1vrhom */
+.jim2-h-btn svg path {
+  stroke: currentColor;
+  stroke-width: 1.1px;
+  stroke-linejoin: round;
+}
+
+/* \u2500\u2500\u2500\u2500\u2500 Glass-orb avatar (V3 signature) \u2500\u2500\u2500\u2500\u2500
+   Pou\u017Eite\u013En\xFD v headeri (38px) aj v message riadku (28px) cez --orb-size.
+   Midnight gradient + inner highlight + italic j monogram + orange spark. */
+.jim2-orb {
+  --orb-size: 38px;
+  position: relative;
+  width: var(--orb-size);
+  height: var(--orb-size);
+  border-radius: var(--jim-r-pill);
+  flex-shrink: 0;
+  background: #fff;                 /* header: biely kruh + tmav\xFD G glyf */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+/* Ofici\xE1lne G logo s iskrami \u2014 ve\u013Ekos\u0165 ~72% kruhu (ako Figma) */
+.jim2-orb-glyph {
+  width: 72%;
+  height: 72%;
+  display: block;
+}
+.jim2-orb-glyph path { fill: #000; }
+
+/* Avatar v message riadku \u2014 men\u0161\xED \u010Dierny kruh + biely glyf */
+.jim2-orb--msg {
+  --orb-size: 28px;
+  background: #000;
+}
+.jim2-orb--msg .jim2-orb-glyph path { fill: #fff; }
+
+/* \u2500\u2500\u2500\u2500\u2500 Body: Chat + Panel \u2500\u2500\u2500\u2500\u2500 */
+.jim2-a-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* \u2500\u2500\u2500\u2500\u2500 Chat panel (LEFT) \u2500\u2500\u2500\u2500\u2500 */
+/* MVP: prav\xFD product panel je vypnut\xFD (vi\u010F .jim2-a-panel ni\u017E\u0161ie),
+   tak\u017Ee border-right na chat-e do\u010Dasne nepotrebujeme. */
+.jim2-a-chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  position: relative;   /* kotva pre GDPR bottom-sheet overlay */
+}
+.jim2-a-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 22px;
+  background: var(--jim-surface);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.jim2-a-messages::-webkit-scrollbar { width: 6px; }
+.jim2-a-messages::-webkit-scrollbar-thumb { background: var(--jim-line); border-radius: 3px; }
+
+/* Day divider \u2014 "Dnes" so dvoma linkami */
+.jim2-day-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--jim-dark-grey, #757779);
+  margin: 2px 0;
+}
+
+/* Messages */
+.jim2-m-row {
+  display: flex;
+  gap: 10px;
+}
+.jim2-m-bot { justify-content: flex-start; }
+.jim2-m-user { justify-content: flex-end; }
+
+/* Bubble appearance anim\xE1cia */
+@keyframes jim-bubble-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.jim2-m-bubble {
+  max-width: 78%;
+  padding: 11px 14px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  animation: jim-bubble-in 0.18s ease-out;
+}
+.jim2-m-bubble-bot {
+  background: #fff;
+  color: #000;
+  border: 2px solid #000;
+  border-radius: 14px 14px 14px 4px;
+}
+.jim2-m-bubble-user {
+  background: var(--jim-aqua);
+  color: #000;
+  border: 2px solid #000;
+  border-radius: 14px 14px 4px 14px;
+}
+
+/* Formatted text */
+.jim2-spacer { height: 8px; }
+.jim2-list-item { display: flex; gap: 6px; }
+.jim2-bullet { flex-shrink: 0; opacity: 0.6; }
+
+/* Inline odkazy v texte odpovede (markdown linky, order/tracking) */
+.jim2-msg-link {
+  color: var(--jim-orange);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
+  font-weight: 600;
+  word-break: break-word;
+}
+.jim2-msg-link:hover,
+.jim2-msg-link:focus { text-decoration-thickness: 2px; }
+/* Na tmavom (user bubble) svetlej\u0161ia oran\u017Eov\xE1 */
+.jim2-m-bubble-user .jim2-msg-link { color: var(--jim-orange); }
+
+/* Feedback meta row \u2014 "Jim \xB7 pred chv\xED\u013Eou" + palce, pod bot bublinou */
+.jim2-m-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 38px;
+}
+.jim2-m-meta-label {
+  font-size: 12px;
+  color: var(--jim-midnight);
+  letter-spacing: 0.06px;
+}
+.jim2-m-meta-fb {
+  display: flex;
+  gap: 6px;
+}
+.jim2-fb-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--jim-midnight-3);
+  transition: background 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.jim2-fb-btn svg { width: 22px; height: 22px; }
+.jim2-fb-btn:hover {
+  background: var(--jim-sunken);
+  color: var(--jim-midnight);
+}
+.jim2-fb-btn[data-fb="up"].jim2-fb-active { color: var(--jim-orange); }
+.jim2-fb-btn[data-fb="down"].jim2-fb-active { color: var(--jim-orange); }
+
+/* Suggestion chips \u2014 aqua V3, zarovnan\xE9 pod bublinu (margin-left 38px) */
+.jim2-m-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-left: 38px;
+  margin-top: 2px;
+}
+.jim2-m-chip {
+  padding: 8px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #000;
+  background: var(--jim-aqua);
+  border: 2px solid #000;
+  border-radius: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, transform 0.12s;
+}
+.jim2-m-chip:hover { background: var(--jim-aqua-deep); }
+.jim2-m-chip:active { transform: scale(0.96); }
+
+/* \u2500\u2500\u2500\u2500\u2500 Composer (V3) \u2500\u2500\u2500\u2500\u2500 */
+.jim2-a-composer {
+  flex-shrink: 0;
+  padding: 14px 18px 16px;
+  border-top: 1px solid var(--jim-line);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+/* Input row \u2014 pill s 2px borderom, focus-within oran\u017Eov\xFD */
+.jim2-a-input-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1.5px solid #000;
+  border-radius: var(--jim-r-pill);
+  padding: 6px 6px 6px 16px;
+  transition: border-color 0.15s;
+}
+.jim2-a-input-area:focus-within {
+  border-color: #000;
+}
+.jim2-a-input {
+  flex: 1;
+  padding: 0;
+  background: transparent;
+  border: none;
+  font-size: 13.5px;
+  color: var(--jim-midnight);
+  font-family: inherit;
+  outline: none;
+}
+.jim2-a-input::placeholder { color: var(--jim-midnight-3); }
+.jim2-a-input:disabled { opacity: 0.5; }
+
+/* Send \u2014 36px oran\u017Eov\xFD kruh */
+.jim2-a-send {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--jim-r-pill);
+  background: #000;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  transition: background 0.15s;
+  flex-shrink: 0;
+  padding: 0;
+}
+.jim2-a-send svg {
+  width: 22px !important;
+  height: 22px !important;
+  display: block;
+}
+.jim2-a-send:hover { background: #1a1a1a; }
+.jim2-a-send:disabled { opacity: 0.5; pointer-events: none; }
+
+/* Footer hint */
+.jim2-a-foot {
+  font-size: 10.5px;
+  color: var(--jim-midnight-3);
+  text-align: center;
+  line-height: 1.4;
+}
+.jim2-a-foot a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Microphone button \u2014 okr\xFAhly, V3 midnight, hover oran\u017Eov\xFD */
+.jim2-a-mic {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--jim-r-pill);
+  background: var(--jim-midnight);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  padding: 0;
+}
+.jim2-a-mic:hover {
+  background: var(--jim-orange);
+  transform: scale(1.05);
+}
+.jim2-a-mic:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+.jim2-mic-recording {
+  background: var(--jim-orange) !important;
+  color: white !important;
+  animation: jim2-mic-pulse 1s ease-in-out infinite;
+}
+@keyframes jim2-mic-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 60, 0, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(255, 60, 0, 0); }
+}
+
+/* Typing */
+.jim2-typing {
+  display: flex;
+  gap: 4px;
+  padding: 4px 0;
+}
+.jim2-typing span {
+  width: 8px;
+  height: 8px;
+  background: #ccc;
+  border-radius: 50%;
+  animation: jim2-bounce 1.4s infinite;
+}
+.jim2-typing span:nth-child(2) { animation-delay: 0.2s; }
+.jim2-typing span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes jim2-bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+
+/* \u2500\u2500\u2500\u2500\u2500 Dynamic panel (RIGHT) \u2500\u2500\u2500\u2500\u2500 */
+/* MVP: prav\xFD produktov\xFD panel je do\u010Dasne vypnut\xFD \u2014 produkty agent uv\xE1dza
+   inline ako markdown odkazy v texte odpovede. Toto skryje aj drag handle
+   v mobile (lebo handle je s\xFA\u010Das\u0165ou panelu). Override v mobile media query
+   ni\u017E\u0161ie tie\u017E mus\xED ma\u0165 \`display: none !important\`. */
+.jim2-a-panel {
+  display: none !important;
+  width: 380px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  background: #FAFAFA;
+  padding: 20px;
+}
+.jim2-a-panel::-webkit-scrollbar { width: 6px; }
+.jim2-a-panel::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
+
+/* Panel sections */
+.jim2-p-section {
+  animation: jim2-panelIn 0.3s ease;
+}
+
+/* Drag handle pre collapse/expand panela na mobile.
+   Default skryt\xFD \u2014 zobraz\xED sa len v media query. */
+.jim2-panel-handle {
+  display: none;
+}
+.jim2-panel-handle-bar {
+  display: block;
+  width: 36px;
+  height: 4px;
+  background: #C8C8C8;
+  border-radius: 2px;
+  margin: 0 auto;
+}
+@keyframes jim2-panelIn {
+  from { opacity: 0; transform: translateX(10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.jim2-p-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #FF5A19;
+}
+.jim2-p-subtitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 12px 0 8px;
+}
+
+/* Empty state */
+.jim2-p-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: #999;
+  padding: 40px;
+}
+.jim2-p-empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+.jim2-p-empty-text {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+   PRODUCT CARDS \u2014 GymBeam Figma spec
+   Tokens: Orange #FF4100, Grey #959595, Light-Grey #E9E9E9,
+           Green #8BC34B (BIO), Dark-Green #2CB35B (VEGAN)
+   Font: Inter (400, 700)
+   \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap");
+
+.jim2-p-products {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.jim2-p-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  overflow: visible;
+}
+.jim2-p-card-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 1px solid #E9E9E9;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+.jim2-p-card-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.jim2-p-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.2s;
+}
+.jim2-p-card:hover .jim2-p-card-img img {
+  transform: scale(1.03);
+}
+
+/* Discount badge (v\u013Eavo hore) */
+.jim2-p-card-discount {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: #FF4100;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.06px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+/* BIO / VEGAN labels (vpravo dole obr\xE1zku) */
+.jim2-p-card-labels {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: flex-end;
+}
+.jim2-p-card-label {
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.06px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: normal;
+}
+.jim2-p-card-label--bio { background: #8BC34B; }
+.jim2-p-card-label--vegan { background: #2CB35B; }
+
+/* Cart button (v\u013Eavo dole obr\xE1zku) */
+.jim2-p-card-cart {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 100px;
+  background: #000000;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, transform 0.15s;
+}
+.jim2-p-card-cart:hover {
+  background: #FF4100;
+  transform: scale(1.08);
+}
+.jim2-p-card-cart svg {
+  width: 20px;
+  height: 15px;
+  fill: #FFFFFF;
+}
+
+/* Info stack pod obr\xE1zkom */
+.jim2-p-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.jim2-p-card-name {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: 0.07px;
+  color: #000000;
+  text-decoration: none;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.jim2-p-card-name:hover {
+  color: #FF4100;
+}
+
+.jim2-p-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Rating riadok */
+.jim2-p-card-rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.jim2-p-card-rating-stars {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.jim2-p-card-rating-stars svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+.jim2-p-card-rating-text {
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.06px;
+  color: #959595;
+  white-space: nowrap;
+}
+
+/* Price riadok */
+.jim2-p-card-price-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.jim2-p-card-price-main {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  color: #FF4100;
+}
+.jim2-p-card-price-from {
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: 0.06px;
+  line-height: normal;
+}
+.jim2-p-card-price {
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.09px;
+  line-height: normal;
+  white-space: nowrap;
+}
+.jim2-p-card-price-unit {
+  font-weight: 400;
+  font-size: 12px;
+  letter-spacing: 0.06px;
+  color: #959595;
+  line-height: normal;
+  white-space: nowrap;
+}
+.jim2-price-loading {
+  color: #bbb;
+  font-style: italic;
+  font-size: 13px;
+  font-weight: 400;
+}
+.jim2-btn-disabled {
+  opacity: 0.4;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+
+/* Order panel */
+.jim2-p-order {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.jim2-p-order-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.jim2-p-status-badge {
+  background: #E8F5E9;
+  color: #2E7D32;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 8px;
+}
+.jim2-p-carrier {
+  font-size: 13px;
+  color: #666;
+}
+.jim2-p-order-items {
+  margin-top: 8px;
+}
+.jim2-p-order-item {
+  font-size: 13px;
+  color: #444;
+  padding: 2px 0;
+}
+.jim2-p-order-total {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+  font-weight: 700;
+  font-size: 14px;
+  color: #1A1A1A;
+}
+
+/* Cart added */
+.jim2-p-cart-added {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.jim2-p-cart-product {
+  font-weight: 600;
+  color: #2E7D32;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+.jim2-go-to-cart {
+  display: block;
+  margin-top: 12px;
+  padding: 10px 16px;
+  background: #1A1A1A;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.15s;
+}
+.jim2-go-to-cart:hover {
+  background: #333;
+}
+.jim2-p-cart-items {
+  margin-top: 12px;
+}
+
+/* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+   MOBILE (responsive)
+   \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+@media (max-width: 768px) {
+  /* Tuck stav \u2014 LEN na mobile. Pri scrolle dole sa bublina zasunie do pravej
+     hrany (vidno ~34 px z 56). Hit target ost\xE1va pln\xFDch 56 px (\u017Eiadny
+     overflow:hidden / pointer-events:none na launcheri). Na desktope sa launcher
+     nikdy netuckuje \u2014 .tucked trieda tam nem\xE1 \u017Eiadny efekt. */
+  .jim2-launcher.jim2-tucked,
+  .jim2-launcher.jim2-tucked:hover,
+  .jim2-launcher.jim2-tucked:focus {
+    right: -22px !important;
+  }
+
+  /* Mobile m\xE1 len jeden form\xE1t (fullscreen) \u2014 maximize/centered toggle skryjeme
+     (z\xE1kazn\xEDk tam nem\xE1 \u010Do prep\xEDna\u0165). */
+  .jim2-view-toggle,
+  .jim2-h-maximize {
+    display: none !important;
+  }
+
+  /* Fullscreen overlay \u2014 iOS Safari fix: dvh po\u010D\xEDta v\xFD\u0161ku BEZ URL baru,
+     tak\u017Ee content sa nestrat\xED pod adresn\xFDm riadkom. Fallback na vh + -webkit-fill-available. */
+  .jim2-overlay {
+    padding: 0;
+    height: 100vh;
+    height: -webkit-fill-available;
+    height: 100dvh;
+  }
+  /* Mobile fullscreen \u2014 plat\xED pre OBA m\xF3dy (popup aj floating/widget).
+     !important kv\xF4li source-order: floating desktop pravidlo (.jim2-overlay--widget
+     .jim2-assistant) je v CSS ni\u017E\u0161ie a m\xE1 rovnak\xFA \u0161pecificitu, inak by prep\xEDsalo fullscreen. */
+  .jim2-assistant,
+  .jim2-overlay--widget .jim2-assistant {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    height: 100vh !important;
+    height: -webkit-fill-available !important;
+    height: 100dvh !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+  }
+  .jim2-overlay--widget {
+    align-items: stretch;
+    justify-content: stretch;
+  }
+
+  /* iOS Safari nezoomuje pri tape do inputu, ak m\xE1 font-size aspo\u0148 16px. */
+  .jim2-a-input {
+    font-size: 16px !important;
+  }
+
+  /* Stack chat a panel vertik\xE1lne */
+  .jim2-a-body {
+    flex-direction: column;
+  }
+  .jim2-a-chat {
+    border-right: none;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .jim2-a-messages {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Mobile panel layout: flex column, handle vrch (no scroll), content dole (scroll).
+     Funguje ako bottom sheet \u2014 drag-gesture support v JS.
+     MVP: vypnut\xE9, vi\u010F default .jim2-a-panel { display: none } vy\u0161\u0161ie. */
+  .jim2-a-panel {
+    display: none !important;
+    width: 100%;
+    max-height: 42vh;
+    flex-shrink: 0;
+    border-top: 1px solid #eee;
+    overflow: hidden !important;
+    padding: 0 !important;
+    flex-direction: column;
+    transition: max-height 0.3s ease;
+  }
+
+  /* Drag handle \u2014 v\xE4\u010D\u0161ia tap target (32px), gesture-friendly */
+  .jim2-panel-handle {
+    display: flex !important;
+    flex-shrink: 0;
+    width: 100%;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    background: #FAFAFA;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0;
+    cursor: grab;
+    touch-action: none;                    /* prevezmeme v\u0161etky touch eventy do JS */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .jim2-panel-handle:active {
+    cursor: grabbing;
+    background: #F0F0F0;
+  }
+  .jim2-panel-handle-bar {
+    width: 40px;
+    height: 5px;
+    border-radius: 3px;
+    background: #C8C8C8;
+    transition: background 0.2s, width 0.2s;
+  }
+  .jim2-a-panel-content {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 12px 20px 20px;
+    min-height: 0;
+  }
+
+  /* Collapsed \u2014 panel m\xE1 len v\xFD\u0161ku handlu */
+  .jim2-a-panel.jim2-panel-collapsed {
+    max-height: 32px;
+  }
+  .jim2-a-panel.jim2-panel-collapsed .jim2-a-panel-content {
+    display: none;
+  }
+  .jim2-a-panel.jim2-panel-collapsed .jim2-panel-handle-bar {
+    background: #000;
+    width: 56px;
+  }
+
+  /* Full \u2014 panel zaberie skoro cel\xFA obrazovku */
+  .jim2-a-panel.jim2-panel-full {
+    max-height: 88vh;
+  }
+  .jim2-a-panel.jim2-panel-full .jim2-panel-handle-bar {
+    background: #888;
+  }
+}
+
+/* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+   BODY SCROLL LOCK
+   \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+body.jim2-overlay-open {
+  overflow: hidden !important;
+}
+
+/* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+   CATEGORY HELPER (scroll-triggered)
+   \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.jim2-category-helper {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  z-index: 99989;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.jim2-category-helper--visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+.jim2-category-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--jim-aqua);
+  border: 2px solid #000;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: #000;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  transition: all 0.2s ease;
+}
+.jim2-category-btn:hover {
+  background: var(--jim-aqua-deep);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+}
+.jim2-category-btn .jim2-q-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Add-to-cart states */
+.jim2-p-card-cart.jim2-cart-loading {
+  background: #888;
+  pointer-events: none;
+  animation: jim2-pulse 1s infinite;
+}
+@keyframes jim2-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.jim2-p-card-cart.jim2-cart-done {
+  background: #2E7D32;
+  pointer-events: none;
+}
+.jim2-p-card-cart.jim2-cart-unavailable {
+  background: #ccc;
+  pointer-events: none;
+}
+/* Skry out-of-stock produkty */
+.jim2-p-card[data-out-of-stock="true"] {
+  display: none;
+}
+
+/* Variant picker panel */
+.jim2-variant-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.jim2-variant-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.jim2-variant-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1A1A1A;
+}
+.jim2-variant-select {
+  padding: 10px 12px;
+  border: 2px solid #1A1A1A;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  background: white;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231A1A1A' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+.jim2-variant-select:focus {
+  border-color: #FF5A19;
+  outline: none;
+}
+.jim2-variant-confirm {
+  background: #FF5A19;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 14px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-top: 8px;
+}
+.jim2-variant-confirm:hover {
+  background: #e54e14;
+}
+.jim2-variant-confirm:disabled {
+  background: #ccc;
+  cursor: wait;
+}
+.jim2-variant-confirm svg {
+  flex-shrink: 0;
+}
+.jim2-variant-back {
+  background: none;
+  border: none;
+  color: #FF5A19;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0 0 12px;
+  transition: color 0.15s;
+}
+.jim2-variant-back:hover {
+  color: #e54e14;
+}
+.jim2-variant-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #FF5A19;
+  margin: -8px 0 4px;
+}
+.jim2-variant-stock {
+  font-size: 12px;
+  color: #2E7D32;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+/* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+   CATEGORY TOP CTA (inline)
+   \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.jim2-entry-category-top {
+  margin: 12px 0;
+}
+.jim2-category-top-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--jim-aqua);
+  border: 2px solid #000;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: #000;
+  transition: all 0.2s ease;
+}
+.jim2-category-top-btn:hover {
+  background: var(--jim-aqua-deep);
+}
+.jim2-category-top-btn .jim2-q-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+   CATEGORY BOTTOM CTA (nahrad\xED "Nena\u0161li ste")
+   \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.jim2-entry-category-bottom {
+  margin: 24px 0;
+  text-align: center;
+}
+.jim2-category-bottom-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  background: var(--jim-aqua);
+  color: #000;
+  border: 2px solid #000;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+.jim2-category-bottom-btn:hover {
+  background: var(--jim-aqua-deep);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.22);
+  transform: translateY(-1px);
+}
+.jim2-category-bottom-btn .jim2-q-icon {
+  width: 22px;
+  height: 22px;
+}
+
+/* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+   VIEW TOGGLE BUTTON (popup \u2194 widget)
+   \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.jim2-view-toggle {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.jim2-view-toggle:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+/* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+   WIDGET MODE
+   \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+/* FLOATING m\xF3d (Mode B): bez scrim, pripnut\xE9 vpravo dole, 400\xD7620, radius 16. */
+.jim2-overlay--widget {
+  background: transparent;
+  backdrop-filter: none;
+  pointer-events: none;
+  padding: 0;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+.jim2-overlay--widget .jim2-assistant {
+  pointer-events: auto;
+  position: relative;
+  width: 400px;
+  max-width: 400px;
+  height: 620px;
+  max-height: 620px;
+  margin: 0 28px 28px 0;
+  border-radius: var(--jim-r-lg);
+  border: 1px solid rgba(0,33,35,.06);
+  box-shadow: var(--jim-shadow-floating);
+  animation: none;
+}
+.jim2-overlay--widget .jim2-a-panel {
+  display: none;
+}
+
+/* Smart questions loading shimmer */
+.jim2-smart-questions--loading {
+  display: flex;
+  gap: 8px;
+}
+.jim2-smart-questions--loading::before,
+.jim2-smart-questions--loading::after {
+  content: "";
+  display: block;
+  height: 34px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: jim2-shimmer 1.5s infinite;
+}
+.jim2-smart-questions--loading::before { width: 180px; }
+.jim2-smart-questions--loading::after { width: 220px; }
+@keyframes jim2-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+   GDPR CONSENT \u2014 bottom-sheet overlay (V3, screenshot 04)
+   Prekryje chat body (header ost\xE1va vidie\u0165 za blurom). Panel dole.
+   \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
+.jim2-gdpr {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(8px);
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  padding: 18px;
+  animation: jim2-fadeIn 0.2s ease;
+}
+.jim2-gdpr-panel {
+  background: #fff;
+  border: 1px solid var(--jim-line);
+  border-radius: 14px;
+  padding: 18px;
+  width: 100%;
+  box-shadow: 0 10px 30px rgba(0,33,35,.12);
+}
+.jim2-gdpr-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--jim-midnight);
+  margin: 0 0 8px;
+}
+.jim2-gdpr-body {
+  font-size: 12px;
+  color: var(--jim-midnight-3);
+  line-height: 1.5;
+  margin: 0 0 14px;
+}
+.jim2-gdpr-body a {
+  color: #000;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.jim2-gdpr-pending {
+  font-size: 12px;
+  color: var(--jim-midnight-3);
+  background: var(--jim-sunken);
+  padding: 8px 10px;
+  border-radius: 8px;
+  margin: 0 0 12px;
+  border-left: 2px solid #000;
+}
+.jim2-gdpr-pending em { font-style: italic; color: var(--jim-midnight); }
+.jim2-gdpr-actions {
+  display: flex;
+  gap: 8px;
+}
+.jim2-gdpr-btn {
+  flex: 1;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 9px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.jim2-gdpr-btn--decline {
+  background: transparent;
+  color: #000;
+  border: 1.5px solid #000;
+}
+.jim2-gdpr-btn--decline:hover { background: var(--jim-aqua); }
+.jim2-gdpr-btn--accept {
+  background: #000;
+  color: #fff;
+  border: 0;
+}
+.jim2-gdpr-btn--accept:hover { background: #1a1a1a; }
+
+/* \u2500\u2500 CSAT [CRM-1256] \u2014 hodnotenie na konci chatu \u2500\u2500 */
+.jim2-csat {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(8px);
+  z-index: 21;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  animation: jim2-fadeIn 0.2s ease;
+}
+.jim2-csat-panel {
+  background: #fff;
+  border: 1px solid var(--jim-line);
+  border-radius: 14px;
+  padding: 22px 20px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 10px 30px rgba(0,33,35,.12);
+  text-align: center;
+}
+.jim2-csat-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--jim-midnight);
+  margin: 0 0 14px;
+}
+.jim2-csat-stars {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 0 0 14px;
+}
+.jim2-csat-star {
+  background: none;
+  border: 0;
+  padding: 2px;
+  cursor: pointer;
+  line-height: 0;
+}
+.jim2-csat-star svg path {
+  fill: none;
+  stroke: var(--jim-midnight-3);
+  stroke-width: 1.5;
+  transition: fill 0.12s, stroke 0.12s;
+}
+.jim2-csat-star:hover svg path { stroke: var(--jim-orange); }
+.jim2-csat-star--on svg path {
+  fill: var(--jim-orange);
+  stroke: var(--jim-orange);
+}
+.jim2-csat-comment {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--jim-midnight);
+  background: var(--jim-sunken);
+  border: 1px solid var(--jim-line);
+  border-radius: 8px;
+  padding: 9px 11px;
+  resize: none;
+  margin: 0 0 14px;
+}
+.jim2-csat-comment:focus {
+  outline: none;
+  border-color: var(--jim-orange);
+}
+.jim2-csat-actions {
+  display: flex;
+  gap: 8px;
+}
+.jim2-csat-btn {
+  flex: 1;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 9px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, opacity 0.15s;
+}
+.jim2-csat-btn--ghost {
+  background: transparent;
+  color: #000;
+  border: 1.5px solid #000;
+}
+.jim2-csat-btn--ghost:hover { background: var(--jim-aqua); }
+.jim2-csat-btn--primary {
+  background: #000;
+  color: #fff;
+  border: 0;
+}
+.jim2-csat-btn--primary:hover { background: #1a1a1a; }
+.jim2-csat-btn--primary:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+.jim2-csat-panel--thanks { padding: 26px 20px; }
+.jim2-csat-thanks {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--jim-midnight);
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+`;var Te=`<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #231f20;
+      }
+    </style>
+  </defs>
+  <path class="cls-1" d="M15.85,50.46c0-1.2.18-2.45.46-3.6l-8.26-1.75,1.15-1.98h8.44c4.11-8.44,14.58-15.74,25.15-15.74,9.09,0,15.09,4.48,14.35,12.09h-10.34c1.11-3.97-.42-6.78-3.92-6.78-7.24,0-17.54,9.97-17.54,19.15,0,2.81,1.34,6.32,5.21,6.32,2.91,0,7.2-2.12,9.88-6.14l-12.32-2.63c.6-2.49,1.71-4.57,3.32-6.28h25.15c-.28,1.11-.69,2.35-1.34,3.92h-20.95l19.52,2.72c-5.63,9.37-14.95,13.7-23.21,13.7-9.18,0-14.77-5.03-14.77-13.01"/>
+  <path class="cls-1" d="M60.07,13.4c0,.09.02.17.03.26,1.08,6.98,3.76,9.65,10.74,10.74.09,0,.17.02.26.03-.09.01-.17.02-.26.03-6.98,1.08-9.65,3.76-10.74,10.74,0,.09-.02.17-.03.26,0-.09-.02-.17-.03-.26-1.08-6.98-3.76-9.65-10.74-10.74-.09,0-.17-.02-.26-.03.09,0,.17-.02.26-.03,6.98-1.08,9.65-3.76,10.74-10.74,0-.09.02-.17.03-.26Z"/>
+  <path class="cls-1" d="M66.52,33.05s.01.1.02.14c.6,3.87,2.09,5.36,5.96,5.96.05,0,.1.01.14.02-.05,0-.1.01-.14.02-3.87.6-5.36,2.09-5.96,5.96,0,.05-.01.1-.02.14,0-.05-.01-.1-.02-.14-.6-3.87-2.09-5.36-5.96-5.96-.05,0-.1-.01-.14-.02.05,0,.1-.01.14-.02,3.87-.6,5.36-2.09,5.96-5.96,0-.05.01-.1.02-.14Z"/>
+</svg>`;var Se=`<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="replay_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24 1">
+<path id="Vector" d="M12.0972 26.2196C10.8843 25.6994 9.8287 24.9966 8.93056 24.1113C8.03241 23.226 7.31944 22.1855 6.79167 20.9899C6.26389 19.7942 6 18.5119 6 17.1429H8.22222C8.22222 19.2786 8.97685 21.0903 10.4861 22.578C11.9954 24.0657 13.8333 24.8095 16 24.8095C18.1667 24.8095 20.0046 24.0657 21.5139 22.578C23.0231 21.0903 23.7778 19.2786 23.7778 17.1429C23.7778 15.0071 23.0231 13.1954 21.5139 11.7077C20.0046 10.22 18.1667 9.47619 16 9.47619H15.8333L17.5556 11.1738L16 12.7619L11.5556 8.38095L16 4L17.5556 5.5881L15.8333 7.28571H16C17.3889 7.28571 18.6898 7.54583 19.9028 8.06607C21.1157 8.58631 22.1713 9.28909 23.0694 10.1744C23.9676 11.0597 24.6806 12.1002 25.2083 13.2958C25.7361 14.4915 26 15.7738 26 17.1429C26 18.5119 25.7361 19.7942 25.2083 20.9899C24.6806 22.1855 23.9676 23.226 23.0694 24.1113C22.1713 24.9966 21.1157 25.6994 19.9028 26.2196C18.6898 26.7399 17.3889 27 16 27C14.6111 27 13.3102 26.7399 12.0972 26.2196Z" fill="var(--fill-0, white)"/>
+</g>
+</svg>
+`;var Ae=`<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="close_fullscreen_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24 1">
+<path id="Vector" d="M8.4 27L7 25.6L13.6 19H9V17H17V25H15V20.4L8.4 27ZM17 17V9H19V13.6L25.6 7L27 8.4L20.4 15H25V17H17Z" fill="var(--fill-0, white)"/>
+</g>
+</svg>
+`;var Pe=`<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="close_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24 1">
+<path id="Vector" d="M8.53333 25.3333L6.66667 23.4667L14.1333 16L6.66667 8.53333L8.53333 6.66667L16 14.1333L23.4667 6.66667L25.3333 8.53333L17.8667 16L25.3333 23.4667L23.4667 25.3333L16 17.8667L8.53333 25.3333Z" fill="var(--fill-0, white)"/>
+</g>
+</svg>
+`;var Le=`<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="send_32dp_E3E3E3_FILL0_wght400_GRAD0_opsz40 1">
+<path id="Vector" d="M20.1668 12.775L4.16675 19.5082C3.88892 19.6194 3.625 19.5958 3.375 19.4375C3.125 19.2792 3 19.05 3 18.75V5.25C3 4.95 3.125 4.72083 3.375 4.5625C3.625 4.40417 3.88892 4.38058 4.16675 4.49175L20.1668 11.225C20.5056 11.375 20.675 11.6333 20.675 12C20.675 12.3667 20.5056 12.625 20.1668 12.775ZM4.66675 17.45L17.6833 12L4.66675 6.5V10.4667L10.7 12L4.66675 13.5V17.45Z" fill="var(--fill-0, white)"/>
+</g>
+</svg>
+`;var Ie=`<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="thumb_up_32dp_E3E3E3_FILL0_wght400_GRAD0_opsz40 (1) 1">
+<path id="Vector" d="M21.25 8.13325C21.6945 8.13325 22.0834 8.29992 22.4167 8.63325C22.7501 8.96658 22.9167 9.3555 22.9167 9.8V11.8308C22.9167 11.9491 22.9195 12.0722 22.925 12.2C22.9305 12.3278 22.9111 12.4501 22.8667 12.5668L19.7667 19.75C19.6181 20.0972 19.3703 20.3923 19.0235 20.6355C18.6767 20.8785 18.3133 21 17.9333 21H6.86675V8.13325L12.6168 2.18325C12.8511 1.94442 13.1285 1.80417 13.449 1.7625C13.7693 1.72083 14.078 1.78333 14.375 1.95C14.6695 2.11667 14.8889 2.34725 15.0332 2.64175C15.1777 2.93608 15.2122 3.24158 15.1367 3.55825L14.1167 8.13325H21.25ZM8.53325 8.83325V19.3333H18.15L21.25 12.0168V9.8H12.0332L13.3667 3.81675L8.53325 8.83325ZM3.65 21C3.19167 21 2.79933 20.8368 2.473 20.5105C2.1465 20.184 1.98325 19.7916 1.98325 19.3333V9.8C1.98325 9.34167 2.1465 8.94933 2.473 8.623C2.79933 8.2965 3.19167 8.13325 3.65 8.13325H6.86675V9.8H3.65V19.3333H6.86675V21H3.65Z" fill="var(--fill-0, #002123)"/>
+</g>
+</svg>
+`;var _e=`<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="thumb_down_32dp_E3E3E3_FILL0_wght400_GRAD0_opsz40 (1) 1">
+<path id="Vector" d="M2.75 15.8668C2.3055 15.8668 1.91658 15.7001 1.58325 15.3668C1.24992 15.0334 1.08325 14.6445 1.08325 14.2V12.1693C1.08325 12.0509 1.0805 11.9278 1.075 11.8C1.0695 11.6722 1.08892 11.5499 1.13325 11.4333L4.23325 4.25C4.38192 3.90283 4.62967 3.60767 4.9765 3.3645C5.32333 3.1215 5.68675 3 6.06675 3H17.1333V15.8668L11.3832 21.8168C11.1489 22.0556 10.8715 22.1958 10.551 22.2375C10.2307 22.2792 9.922 22.2167 9.625 22.05C9.3305 21.8833 9.11108 21.6528 8.96675 21.3583C8.82225 21.0639 8.78775 20.7584 8.86325 20.4418L9.88325 15.8668H2.75ZM15.4667 15.1668V4.66675H5.85L2.75 11.9833V14.2H11.9667L10.6332 20.1833L15.4667 15.1668ZM20.35 3C20.8083 3 21.2007 3.16317 21.527 3.4895C21.8535 3.816 22.0167 4.20842 22.0167 4.66675V14.2C22.0167 14.6583 21.8535 15.0507 21.527 15.377C21.2007 15.7035 20.8083 15.8668 20.35 15.8668H17.1333V14.2H20.35V4.66675H17.1333V3H20.35Z" fill="var(--fill-0, #002123)"/>
+</g>
+</svg>
+`;var C=R=>R.replace(/var\(--fill-0,\s*[^)]*\)/g,"currentColor"),T={replay:C(Se),collapse:C(Ae),close:C(Pe),send:C(Le),thumbUp:C(Ie),thumbDown:C(_e)};(function(){"use strict";function R(){if(document.currentScript)return document.currentScript;let e=document.querySelectorAll("script[src*='widget.js']");return e[e.length-1]||null}let _=R(),k={backendUrl:_?.dataset.backend||"http://localhost:8080",market:_?.dataset.market||(typeof window<"u"?window.location.hostname:""),debug:_?.dataset.debug==="true",features:{voice:_?.dataset.voice==="true"}},x=k.backendUrl;k.debug&&console.log("[Jim2 Widget] config:",k);let V=typeof navigator<"u"&&/gymbeam-mobile-app/i.test(navigator.userAgent||""),Me="6LeeDZ0tAAAAACMZwc7FgVdaMl4BVuzLBGAPtz9x",Ee="6LeOEJ0tAAAAADb8fC30JEHr41Px8_MeH6ShHCcT",G=(()=>{let e=(typeof window<"u"?window.location.hostname:"").toLowerCase();return e==="localhost"||e==="127.0.0.1"||e==="gymbeam.dev"||e.endsWith(".gymbeam.dev")?Ee:Me})();function Je(){if(V||document.getElementById("jim2-recaptcha"))return;let e=document.createElement("script");e.id="jim2-recaptcha",e.src="https://www.google.com/recaptcha/enterprise.js?render="+G,e.async=!0,e.defer=!0,document.head.appendChild(e)}let Be=3e3,De=3,$e=300;function Re(){return new Promise(e=>{if(V)return e({token:"",tries:0,waitMs:0});let t=Date.now(),a=t+Be,n=0;(function o(){if(typeof grecaptcha<"u"&&grecaptcha.enterprise){let s=Date.now()-t;grecaptcha.enterprise.ready(()=>r(De,s));return}if(Date.now()>=a)return k.debug&&console.warn("[Jim2] reCAPTCHA sa nena\u010D\xEDtala v\u010Das \u2192 pr\xE1zdny token"),e({token:"",tries:0,waitMs:Date.now()-t});setTimeout(o,100)})();async function r(o,s){n++;try{let l=await grecaptcha.enterprise.execute(G,{action:"chat"});if(l)return e({token:l,tries:n,waitMs:s});throw new Error("pr\xE1zdny token")}catch(l){o>1?setTimeout(()=>r(o-1,s),$e):(k.debug&&console.warn("[Jim2] reCAPTCHA execute zlyhal po retry:",l),e({token:"",tries:n,waitMs:s}))}}})}async function U(){if(!(window.JimHost&&window.JimHost.version===2&&typeof window.JimHost.getAppCheckToken=="function"))return null;let e=null;for(let t=1;t<=2;t++){try{let a=await window.JimHost.getAppCheckToken();if(a&&a.token)return a;e=a}catch(a){k.debug&&console.warn("[Jim2] App Check most zlyhal:",a),e=e||{token:"",platform:void 0,error:"bridge_failed"}}t<2&&await new Promise(a=>setTimeout(a,400))}return e}function Ve(){if(document.getElementById("jim2-widget-styles"))return;let e=document.createElement("style");e.id="jim2-widget-styles",e.textContent=Ce,document.head.appendChild(e)}let j=sessionStorage.getItem("jim2_session_id");j||(j=crypto.randomUUID(),sessionStorage.setItem("jim2_session_id",j));let Z="customerToken";function K(e){let t=document.cookie.match(new RegExp("(?:^|; )"+e.replace(/([.$?*|{}()[\]\\/+^])/g,"\\$1")+"=([^;]*)"));return t?decodeURIComponent(t[1]):""}let F="jim2_messages",W=30;function Fe(){try{let e=sessionStorage.getItem(F);if(!e)return[];let t=JSON.parse(e);return Array.isArray(t)?t:[]}catch{return[]}}function Ne(e){try{let t=e.length>W?e.slice(-W):e;sessionStorage.setItem(F,JSON.stringify(t))}catch(t){console.warn("[Jim2] saveMessages failed:",t)}}function He(){try{sessionStorage.removeItem(F)}catch{}}let Y="jim2_gdpr_consent",Q="1.0";function N(){try{let e=localStorage.getItem(Y);if(!e)return!1;let t=JSON.parse(e);return t.accepted===!0&&t.version===Q}catch{return!1}}function X(e){try{localStorage.setItem(Y,JSON.stringify({accepted:e,version:Q,timestamp:new Date().toISOString()}))}catch(t){console.warn("[Jim2] GDPR consent save failed:",t)}}function qe(){X(!0),i.gdprState="granted",i.gdprDeclined=!1;let e=i.pendingPrefill;i.pendingPrefill=null,v(),e&&setTimeout(()=>w(e),150)}function Oe(){X(!1),i.gdprState="declined",v()}function Ge(){i.gdprState="pending",v()}function Ot(e,t=1.8){return`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${t}" stroke-linecap="round" stroke-linejoin="round">${{"rotate-ccw":'<polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>',maximize:'<path d="M4 14V4h10"/><path d="M20 10v10H10"/>',unmaximize:'<rect x="3" y="8" width="13" height="13" rx="1"/><path d="M8 8V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-5"/>',minimize:'<path d="M5 19h14"/>',close:'<path d="M18 6 6 18M6 6l12 12"/>',send:'<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>',"thumbs-up":'<path d="M7 10v11h11l3-7v-3a2 2 0 0 0-2-2h-6l1-5a2 2 0 0 0-2-2l-5 8"/><path d="M3 10h4v11H3z"/>',"thumbs-down":'<path d="M17 14V3H6L3 10v3a2 2 0 0 0 2 2h6l-1 5a2 2 0 0 0 2 2l5-8"/><path d="M21 14h-4V3h4z"/>',sparkle:'<path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"/>'}[e]||""}</svg>`}let ee=Te.replace(/<defs>[\s\S]*?<\/defs>/i,"").replace(/\sclass="cls-1"/g,"").replace(/<svg /i,'<svg class="jim2-orb-glyph" ');function H(e="header"){return`<div class="jim2-orb${e==="msg"?" jim2-orb--msg":""}">${ee}</div>`}let i={isOpen:!1,isLoading:!1,messages:Fe(),panelContent:null,pageContext:null,appManagedContext:!1,mode:"shopping",viewMode:sessionStorage.getItem("jim2_view_mode")||"popup",cartItems:[],gdprState:N()?"granted":"pending",pendingPrefill:null,panelStage:"default",csatEligible:!1,csatView:null,csatRating:0,csatTrigger:"close_x",csatDone:sessionStorage.getItem("jim2_csat_done")==="1"};function te(){let e=window.location.pathname,t=window.location.hostname;if(e.includes("/checkout/cart")||e.includes("/cart"))return{type:"cart"};if(e.includes("/customer/account")||e.includes("/sales/order"))return{type:"account"};if(e.includes("/blog")||e.includes("/clanky")||e.includes("/magazin"))return{type:"blog"};if(!!!document.querySelector('[data-test="pdp-add-to-cart-main"]')){let d=document.querySelector(".products-grid")||document.querySelector(".products.wrapper")||document.querySelector("[class*='product-items']")||document.querySelector('[data-test="pdp-add-to-cart-recommended-products"]')?.closest('[class*="grid"], [class*="flex"]'),c=document.querySelectorAll('[data-test="pdp-add-to-cart-recommended-products"]');if(d||c.length>=3){let p=document.querySelector(".page-title .base")||document.querySelector("h1");return{type:"category",categoryName:p?p.textContent.trim():""}}}let n=document.querySelector("h1")||document.querySelector(".page-title .base")||document.querySelector("[data-ui-id='page-title-wrapper']"),r=document.querySelector('[data-test="pdp-price"]')||document.querySelector('[data-test="product-price"]')||document.querySelector(".product-info-price .price")||document.querySelector("[data-price-type='finalPrice'] .price"),o=r||(()=>{let d=document.querySelectorAll("span, div");for(let c of d)if(/^\d+[,.]\d{2}\s*€$/.test(c.textContent.trim())&&c.closest("main, [role='main'], #maincontent, .product"))return c;return null})(),s=document.querySelector('[data-test="pdp-gallery"] img')||document.querySelector(".fotorama__active img")||document.querySelector("main img[src*='product']")||document.querySelector(".product.media img");if(!!document.querySelector('[data-test="pdp-add-to-cart-main"], button[title="Prida\u0165 do ko\u0161\xEDka"]')||n&&o){let d=document.querySelector(".product.attribute.description .value")||document.querySelector(".product.info.detailed .description .value")||document.querySelector("[itemprop='description']")||document.querySelector(".product-info-main .product.attribute.overview"),c=document.querySelector(".product.attribute.overview .value")||document.querySelector(".product-info-main .product.attibute.overview"),m=(d?d.textContent.trim():"")+" "+(c?c.textContent.trim():""),p=Array.from(document.querySelectorAll(".breadcrumbs a, .breadcrumb a")).map(f=>f.textContent.trim()),h=document.querySelector(".rating-result, [itemprop='ratingValue'], .product-reviews-summary .rating"),b=h?h.textContent.trim():"";return{type:"pdp",productName:n.textContent.trim(),productPrice:(o||r)?.textContent.trim()||"",productImage:s?s.src:null,productDescription:m.substring(0,1e3),breadcrumbs:p,rating:b}}return e==="/"||e.match(/^\/(sk|cz|hu|en|bg|ro|de)?\/?$/)?{type:"homepage"}:{type:"generic"}}function Gt(e){let t=(e.productName||"").toLowerCase(),a=(e.productDescription||"").toLowerCase(),n=t+" "+a,r=[];return/proteín|protein|whey|kazeín|casein/i.test(n)&&r.push("Obsahuje lakt\xF3zu?"),/bielkov|proteín|protein/i.test(n)&&!/laktóz/i.test(n)&&r.push("Ko\u013Eko prote\xEDnu m\xE1 jedna porcia?"),/vegán|vegan|rastlinn/i.test(n)&&r.push("Je certifikovan\xFD ako veg\xE1nsky?"),/bezlepk|gluten.?free/i.test(n)&&r.push("Je naozaj bezlepkov\xFD?"),/cukor|sugar|sladid|sladkost|spread|nátierka|čokolád/i.test(n)&&r.push("Ko\u013Eko cukru obsahuje?"),/chudnut|diét|fat.?loss|nízkokalor/i.test(n)?r.push("Je vhodn\xFD na chudnutie?"):/nabera|sval|muscle|gainer|hmotnost/i.test(n)&&r.push("Pom\xF4\u017Ee mi s naberan\xEDm svalovej hmoty?"),/pred tréning|pre.?workout|energy|energi/i.test(n)&&r.push("Kedy ho m\xE1m pi\u0165 pred tr\xE9ningom?"),/po tréningu|post.?workout|regenerác/i.test(n)&&r.push("Je vhodn\xFD hne\u010F po tr\xE9ningu?"),(/chuť|flavor|príchuť|príchut/i.test(n)||/spread|nátierka|maslo|butter/i.test(n))&&r.push("Ak\xE1 chu\u0165 je najob\u013E\xFAbenej\u0161ia?"),/spread|nátierka|maslo|butter|krém/i.test(n)&&r.push("Na \u010Do v\u0161etko sa d\xE1 pou\u017Ei\u0165?"),/miešať|shaker|rozpust|vod[aou]|mlieko/i.test(n)&&r.push("Ako sa najlep\u0161ie mie\u0161a?"),/kreatin|creatine/i.test(n)&&r.push("Ako spr\xE1vne d\xE1vkova\u0165 kreat\xEDn?","Je potrebn\xE1 loading f\xE1za?"),/vitamín|vitamin/i.test(n)&&r.push("Ak\xE9 je odpor\xFA\u010Dan\xE9 denn\xE9 d\xE1vkovanie?","M\xF4\u017Eem bra\u0165 nala\u010Dno?"),/kapsul|tablet|caps|tabs/i.test(n)&&r.length<2&&r.push("Ko\u013Eko kaps\xFAl denne m\xE1m bra\u0165?"),r.length<3&&r.push("M\xE1te nie\u010Do podobn\xE9, ale lacnej\u0161ie?"),r.length<2&&r.push("Pre koho je tento produkt najvhodnej\u0161\xED?"),r.length<3&&r.push("D\xE1 sa kombinova\u0165 s in\xFDmi produktmi?"),[...new Set(r)].slice(0,3)}function Ue(){document.querySelectorAll(".jim2-entry").forEach(a=>a.remove());let e=document.querySelector("df-messenger");e&&(e.style.display="none");let t=te();switch(i.appManagedContext||(i.pageContext=t),t.type){case"homepage":Ze();break;case"cart":Ke();break;case"account":We();break;case"blog":Ye();break}Qe()}function Ze(){let e=document.querySelector(".cms-home .widget")||document.querySelector(".cms-home .block-products-list")||document.querySelector("#maincontent .columns")||document.querySelector(".page-main");if(!e)return;let t=document.createElement("div");t.className="jim2-entry jim2-entry-homepage",t.innerHTML=`
+      <div class="jim2-hero-cta">
+        <div class="jim2-hero-text">
+          <div class="jim2-hero-title">Nevie\u0161 si vybra\u0165?</div>
+          <div class="jim2-hero-subtitle">Jim ti porad\xED s v\xFDberom suplementov a v\xFD\u017Eivy pod\u013Ea tvojich cie\u013Eov.</div>
+        </div>
+        <button class="jim2-cta jim2-cta-primary jim2-cta-large" data-action="open" data-prefill="">
+          <span class="jim2-cta-icon">\u{1F4AA}</span>
+          Pom\xF4\u017E mi vybra\u0165
+        </button>
+      </div>
+    `,e.children.length>1?e.insertBefore(t,e.children[1]):e.appendChild(t)}function Ke(){let e=document.querySelector(".cart-container")||document.querySelector(".checkout-cart-index")||document.querySelector("#maincontent");if(!e)return;let t=document.createElement("div");t.className="jim2-entry jim2-entry-cart",t.innerHTML=`
+      <button class="jim2-cta jim2-cta-subtle" data-action="open" data-prefill="Nie som si ist\xFD v\xFDberom, vie\u0161 mi poradi\u0165?">
+        Nie si si ist\xFD v\xFDberom? <span class="jim2-cta-arrow">\u2192</span>
+      </button>
+    `,e.appendChild(t)}function We(){let e=document.querySelector(".account .column.main")||document.querySelector("#maincontent .columns");if(!e)return;let t=document.createElement("div");t.className="jim2-entry jim2-entry-account",t.innerHTML=`
+      <div class="jim2-account-ctas">
+        <button class="jim2-cta jim2-cta-secondary" data-action="open" data-prefill="Chcem rie\u0161i\u0165 reklam\xE1ciu" data-mode="support">
+          \u{1F504} Rie\u0161i\u0165 reklam\xE1ciu
+        </button>
+      </div>
+    `,e.insertBefore(t,e.firstChild)}function Ye(){let e=document.querySelector(".post-content")||document.querySelector("article")||document.querySelector(".blog-post");if(!e)return;let t=document.createElement("div");t.className="jim2-entry jim2-entry-blog",t.innerHTML=`
+      <button class="jim2-cta jim2-cta-secondary jim2-cta-wide" data-action="open" data-prefill="Odporu\u010D mi produkty s\xFAvisiace s t\xFDmto \u010Dl\xE1nkom">
+        <span class="jim2-cta-icon">\u{1F6CD}\uFE0F</span>
+        Odporu\u010Di\u0165 produkty z \u010Dl\xE1nku
+      </button>
+    `,e.appendChild(t)}function Qe(){if(document.getElementById("jim2-launcher"))return;let e=document.createElement("button");e.id="jim2-launcher",e.className="jim2-launcher",e.setAttribute("data-action","open"),e.setAttribute("data-prefill",""),e.setAttribute("aria-label","Otvori\u0165 Jim chat"),e.innerHTML='<span class="jim2-launcher-pulse" aria-hidden="true"></span>'+ee,document.body.appendChild(e),Xe(e)}function Xe(e){let t=window.scrollY||0,a=0,n=0,r=!1,o=s=>{s!==r&&(r=s,e.classList.toggle("jim2-tucked",s))};window.addEventListener("scroll",()=>{let s=window.scrollY||0,l=s-t;if(t=s,s<40){o(!1),a=0,n=0;return}l>0?(a+=l,n=0,a>18&&!r&&o(!0)):l<0&&(n+=-l,a=0,n>24&&r&&o(!1))},{passive:!0})}function ae(){let e=i.pageContext,t=g(),a=t.welcome;switch(e?.type){case"pdp":a=t.welcomePdp.replace("{product}",e.productName||"");break;case"category":a=t.welcomeCategory;break;case"cart":a=t.welcomeCart;break;case"account":a=t.welcomeAccount,i.mode="support";break;case"blog":a=t.welcomeBlog;break}let n=t.intro+" "+a,r=t.chips.slice();i.messages.push({role:"assistant",content:n,suggestions:r,ts:Date.now()})}function ie(e="",t=null){t&&(i.mode=t),i.isOpen=!0,U().catch(()=>{}),i.messages.length===0&&ae(),v(),i.viewMode==="popup"&&document.body.classList.add("jim2-overlay-open");let a=document.getElementById("jim2-launcher");a&&(a.style.display="none"),e&&setTimeout(()=>w(e),400)}function et(){typeof window>"u"||window.Jim||(window.Jim={setPageContext:function(e){!e||typeof e!="object"||(i.pageContext={type:e.type||"generic",url:e.url||null,sku:e.sku!=null?String(e.sku):null,productName:e.productName||null,breadcrumbs:Array.isArray(e.breadcrumbs)?e.breadcrumbs:null,categoryName:e.categoryName||null},i.appManagedContext=!0,k.debug&&console.log("[Jim2] setPageContext:",i.pageContext))},ask:function(e){let t=(e==null?"":String(e)).trim();if(!t){M("",null);return}if(!i.isOpen){M(t,null);return}N()?w(t):(i.pendingPrefill=t,v())},open:function(){M("",null)}})}function S(){i.isOpen=!1,document.body.classList.remove("jim2-overlay-open");let e=document.getElementById("jim2-overlay");e&&(e.classList.add("jim2-closing"),setTimeout(()=>e.remove(),300));let t=document.getElementById("jim2-launcher");t&&(t.style.display="")}function v(){Ne(i.messages);let e=document.getElementById("jim2-overlay");if(!e){e=document.createElement("div"),e.id="jim2-overlay",e.className=i.viewMode==="widget"?"jim2-overlay jim2-overlay--widget":"jim2-overlay",document.body.appendChild(e),e.innerHTML=`
+        <div class="jim2-assistant${i.viewMode==="widget"?" jim2-assistant--widget":""}">
+          <div class="jim2-a-header">
+            <div class="jim2-a-header-left">
+              ${H("header")}
+              <div>
+                <div class="jim2-a-title">Jim AI</div>
+                <div class="jim2-a-subtitle"><span class="jim2-status-dot"></span>Always active</div>
+              </div>
+            </div>
+            <div class="jim2-a-header-right">
+              <button class="jim2-h-btn" id="jim2-h-reset" title="Nov\xFD rozhovor">${T.replay}</button>
+              <button class="jim2-h-btn jim2-h-maximize" id="jim2-h-maximize" title="Zmeni\u0165 form\xE1t"></button>
+              <button class="jim2-h-btn" id="jim2-a-close" title="Zavrie\u0165">${T.close}</button>
+            </div>
+          </div>
+          <div class="jim2-a-body">
+            <div class="jim2-a-chat" id="jim2-a-chat">
+              <div class="jim2-a-messages" id="jim2-a-messages"></div>
+              <div class="jim2-a-composer">
+                <div class="jim2-a-input-area">
+                  <input type="text" id="jim2-a-input" class="jim2-a-input" placeholder="${g().placeholder}" maxlength="2000" />
+                  ${k.features.voice?`
+                  <button id="jim2-a-mic" class="jim2-a-mic" title="Nadiktova\u0165 spr\xE1vu">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+                  </button>
+                  `:""}
+                  <button id="jim2-a-send" class="jim2-a-send">${T.send}</button>
+                </div>
+                <div class="jim2-a-foot">${g().disclaimer} <a href="${ye()}" target="_blank" rel="noopener">${g().privacyLink}</a></div>
+              </div>
+              <div id="jim2-gdpr-mount"></div>
+              <div id="jim2-csat-mount"></div>
+            </div>
+            <div class="jim2-a-panel" id="jim2-a-panel"></div>
+          </div>
+        </div>
+      `,document.getElementById("jim2-a-close").onclick=le,e.onmousedown=p=>{p.target===e&&le()};let m=document.getElementById("jim2-a-input");if(m.onkeydown=p=>{p.key==="Enter"&&m.value.trim()&&(w(m.value.trim()),m.value="")},document.getElementById("jim2-a-send").onclick=()=>{m.value.trim()&&(w(m.value.trim()),m.value="")},k.features.voice){let p=document.getElementById("jim2-a-mic");p&&(p.onclick=()=>_t(p,m))}document.getElementById("jim2-h-maximize").onclick=()=>{i.viewMode=i.viewMode==="popup"?"widget":"popup",sessionStorage.setItem("jim2_view_mode",i.viewMode),e.remove(),i.viewMode==="popup"?document.body.classList.add("jim2-overlay-open"):document.body.classList.remove("jim2-overlay-open"),v()},document.getElementById("jim2-h-reset").onclick=()=>{j=crypto.randomUUID(),sessionStorage.setItem("jim2_session_id",j),i.messages=[],He(),ae(),v()}}let t=document.getElementById("jim2-h-maximize");t&&(t.innerHTML=T.collapse,t.title=i.viewMode==="popup"?"Zmen\u0161i\u0165 do pl\xE1vaj\xFAceho okna":"Roztiahnu\u0165 do ve\u013Ek\xE9ho okna");let a=document.getElementById("jim2-a-messages");a.innerHTML=st()+(i.isLoading?ct():""),a.dataset.linkLoggerBound||(a.dataset.linkLoggerBound="1",a.addEventListener("click",m=>{let p=m.target.closest("a.jim2-msg-link");if(!p)return;let h=p.closest(".jim2-m-row");Et({url:p.href,message_id:h?.dataset.msgId||null,message_idx:h?.dataset.msgIdx!=null?Number(h.dataset.msgIdx):null,is_product:p.dataset.productLink==="1"})}));let n=document.getElementById("jim2-gdpr-mount");n&&(n.innerHTML=tt());let r=document.getElementById("jim2-csat-mount");r&&(r.innerHTML=it());let o=document.getElementById("jim2-a-panel");o.innerHTML=pe(),o.classList.remove("jim2-panel-collapsed","jim2-panel-full"),i.panelStage==="collapsed"&&o.classList.add("jim2-panel-collapsed"),i.panelStage==="full"&&o.classList.add("jim2-panel-full"),o.style.maxHeight="",o.style.transition="";let s=document.getElementById("jim2-a-input"),l=document.getElementById("jim2-a-send"),d=document.getElementById("jim2-a-mic"),c=i.gdprState!=="granted";s.disabled=i.isLoading||c,l.disabled=i.isLoading||c,d&&(d.disabled=c),c?s.placeholder=g().placeholderConsent:s.placeholder=g().placeholder,me(),kt(),!i.isLoading&&!c&&s.focus()}function tt(){if(i.gdprState==="granted")return"";let e=g(),t=`<a href="${ye()}" target="_blank" rel="noopener">${e.gdprLink}</a>`;if(i.gdprState==="pending"){let a=i.pendingPrefill?`<div class="jim2-gdpr-pending">${e.gdprPending.replace("{q}",`<em>${u(i.pendingPrefill)}</em>`)}</div>`:"";return`
+        <div class="jim2-gdpr" role="region" aria-label="${e.gdprTitle}">
+          <div class="jim2-gdpr-panel">
+            <h4 class="jim2-gdpr-title">${e.gdprTitle}</h4>
+            <p class="jim2-gdpr-body">${e.gdprBody.replace("{link}",t)}</p>
+            ${a}
+            <div class="jim2-gdpr-actions">
+              <button class="jim2-gdpr-btn jim2-gdpr-btn--decline" data-gdpr="decline">${e.gdprDecline}</button>
+              <button class="jim2-gdpr-btn jim2-gdpr-btn--accept" data-gdpr="accept">${e.gdprAccept}</button>
+            </div>
+          </div>
+        </div>
+      `}return i.gdprState==="declined"?`
+        <div class="jim2-gdpr" role="region" aria-label="${e.gdprTitle}">
+          <div class="jim2-gdpr-panel">
+            <h4 class="jim2-gdpr-title">${e.gdprDeclinedTitle}</h4>
+            <p class="jim2-gdpr-body">${e.gdprDeclinedBody}</p>
+            <div class="jim2-gdpr-actions">
+              <button class="jim2-gdpr-btn jim2-gdpr-btn--accept" data-gdpr="reset">${e.gdprReset}</button>
+            </div>
+          </div>
+        </div>
+      `:""}let at='<svg viewBox="0 0 24 24" width="30" height="30"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l7.1-1.01L12 2z"/></svg>';function it(){if(!i.csatView)return"";let e=g();if(i.csatView==="thanks"||i.csatView==="thanksLow"){let n=i.csatView==="thanks"?e.csatThanks:e.csatThanksLow;return`
+        <div class="jim2-csat" role="region" aria-label="${u(e.csatTitle)}">
+          <div class="jim2-csat-panel jim2-csat-panel--thanks">
+            <p class="jim2-csat-thanks">${u(n)}</p>
+            <button class="jim2-csat-btn jim2-csat-btn--primary" data-csat="close">OK</button>
+          </div>
+        </div>`}let t=[1,2,3,4,5].map(n=>`<button class="jim2-csat-star${n<=i.csatRating?" jim2-csat-star--on":""}" data-star="${n}" aria-label="${n}" type="button">${at}</button>`).join(""),a=i.csatRating===0?" disabled":"";return`
+      <div class="jim2-csat" role="region" aria-label="${u(e.csatTitle)}">
+        <div class="jim2-csat-panel">
+          <h4 class="jim2-csat-title">${u(e.csatTitle)}</h4>
+          <div class="jim2-csat-stars">${t}</div>
+          <textarea class="jim2-csat-comment" id="jim2-csat-comment" rows="3" maxlength="1000" placeholder="${u(e.csatCommentPlaceholder)}"></textarea>
+          <div class="jim2-csat-actions">
+            <button class="jim2-csat-btn jim2-csat-btn--ghost" data-csat="skip" type="button">${u(e.csatSkip)}</button>
+            <button class="jim2-csat-btn jim2-csat-btn--primary" data-csat="submit" type="button"${a}>${u(e.csatSubmit)}</button>
+          </div>
+        </div>
+      </div>`}function oe(){i.csatDone=!0;try{sessionStorage.setItem("jim2_csat_done","1")}catch{}}function ne(e){try{fetch(`${x}/event`,{method:"POST",keepalive:!0,headers:{"Content-Type":"application/json"},body:JSON.stringify({session_id:j,type:e,market:k.market||window.location.hostname})}).catch(()=>{})}catch{}}function ot(e,t,a){try{fetch(`${x}/csat`,{method:"POST",keepalive:!0,headers:{"Content-Type":"application/json"},body:JSON.stringify({session_id:j,rating:e,comment:t||null,trigger:a,customer_token:K(Z),market:k.market||window.location.hostname})}).catch(()=>{})}catch{}}function nt(){if(i.csatRating===0)return;let e=(document.getElementById("jim2-csat-comment")?.value||"").trim();oe(),ot(i.csatRating,e,i.csatTrigger),i.csatView=i.csatRating>=4?"thanks":"thanksLow",v()}function re(){oe(),ne("csat_skipped"),i.csatView=null,S()}function se(){i.csatView=null,S()}function de(){if(V||!i.csatEligible||i.csatDone||i.csatView)return!1;let e=new Set(g().chips||[]),t=i.messages.filter(n=>n.role==="user");return t.filter(n=>!e.has(n.content)).length>=1||t.length>=2}function ce(e="close_x"){i.csatTrigger=e,i.csatView="form",i.csatRating=0,ne("csat_offered"),v()}function le(){if(i.csatView==="form"){re();return}if(i.csatView){se();return}if(de()){ce("close_x");return}S()}function me(){let e=document.getElementById("jim2-panel-handle"),t=document.getElementById("jim2-a-panel");if(e&&t){let o=null,s=null,l=()=>({collapsed:24,default:Math.round(window.innerHeight*.42),full:Math.round(window.innerHeight*.88)}),d=m=>{let p=l(),h="default",b=1/0;for(let[f,y]of Object.entries(p)){let I=Math.abs(m-y);I<b&&(b=I,h=f)}i.panelStage=h,v()},c=()=>{let m=["collapsed","default","full"],p=m.indexOf(i.panelStage);i.panelStage=m[(p+1)%m.length],v()};e.addEventListener("touchstart",m=>{o=m.touches[0].clientY,s=t.offsetHeight,t.style.transition="none"},{passive:!0}),e.addEventListener("touchmove",m=>{if(o===null)return;let p=m.touches[0].clientY-o,h=window.innerHeight*.95,b=Math.max(24,Math.min(h,s-p));t.style.maxHeight=b+"px",m.preventDefault()},{passive:!1}),e.addEventListener("touchend",()=>{if(o===null)return;t.style.transition="";let m=t.offsetHeight;Math.abs(m-s)<8?(t.style.maxHeight="",c()):d(m),o=null,s=null}),e.addEventListener("click",m=>{m.detail!==0&&o===null&&c()})}document.querySelectorAll("[data-gdpr]").forEach(o=>{o.onclick=()=>{let s=o.dataset.gdpr;s==="accept"?qe():s==="decline"?Oe():s==="reset"&&Ge()}});let a=document.getElementById("jim2-csat-mount");if(a&&i.csatView==="form"){let o=a.querySelectorAll(".jim2-csat-star");o.forEach(s=>{s.onclick=()=>{i.csatRating=Number(s.dataset.star),o.forEach(d=>d.classList.toggle("jim2-csat-star--on",Number(d.dataset.star)<=i.csatRating));let l=a.querySelector('[data-csat="submit"]');l&&(l.disabled=!1)}})}if(a){let o=a.querySelector('[data-csat="submit"]');o&&(o.onclick=nt);let s=a.querySelector('[data-csat="skip"]');s&&(s.onclick=re);let l=a.querySelector('[data-csat="close"]');l&&(l.onclick=se)}document.querySelectorAll(".jim2-m-chip").forEach(o=>{o.onclick=()=>{if(o.dataset.chip===g().csatFarewellChip&&de()){ce("farewell");return}w(o.dataset.chip)}}),document.querySelectorAll("[data-add-product]").forEach(o=>{o.onclick=async()=>{let s=o.dataset.productName,l=o.dataset.productUrl,d=l?l.startsWith("http")?l:"https://"+window.location.hostname+l:"";o.disabled=!0,o.classList.add("jim2-cart-loading");let c=null;if(d&&(c=await It(d)),c&&!c.inStock){o.classList.remove("jim2-cart-loading"),o.classList.add("jim2-cart-unavailable"),o.disabled=!0,i.messages.push({role:"assistant",content:`${c.name||s} je moment\xE1lne vypredan\xFD. Chce\u0161, aby som ti na\u0161iel podobn\xFA alternat\xEDvu?`,suggestions:["N\xE1jdi alternat\xEDvu","Zobrazi\u0165 \u010Fal\u0161ie","\u010Eakujem"]}),v();return}if(c&&c.type==="SimpleProduct"){let m=await q(c.sku);if(m.success){let p=document.querySelector('[data-test="cart-number-of-products"]');p&&m.totalQty&&(p.textContent=m.totalQty),i.cartItems.push(s),i.panelContent={type:"cart-added",data:{name:s}},i.messages.push({role:"assistant",content:`${s} bol pridan\xFD do ko\u0161\xEDka!`,suggestions:["Zobrazi\u0165 \u010Fal\u0161ie","\xCDs\u0165 do ko\u0161\xEDka","\u010Eakujem, to je v\u0161etko"]}),o.classList.remove("jim2-cart-loading"),o.classList.add("jim2-cart-done"),v();return}}if(c&&c.type==="ConfigurableProduct"&&c.options.length>0){if(c.options.every(p=>p.values.length===1)){let p=c.options.map(b=>b.values[0].uid),h=await q(c.sku,1,p);if(h.success){let b=document.querySelector('[data-test="cart-number-of-products"]');b&&h.totalQty&&(b.textContent=h.totalQty);let f=c.options.map(y=>y.values[0].label).join(", ");i.cartItems.push(`${c.name||s} (${f})`),i.panelContent={type:"cart-added",data:{name:`${c.name||s} (${f})`}},i.messages.push({role:"assistant",content:`${c.name||s} (${f}) bol pridan\xFD do ko\u0161\xEDka!`,suggestions:["Zobrazi\u0165 \u010Fal\u0161ie","\xCDs\u0165 do ko\u0161\xEDka","\u010Eakujem, to je v\u0161etko"]}),o.classList.remove("jim2-cart-loading"),o.classList.add("jim2-cart-done"),v();return}}o.classList.remove("jim2-cart-loading"),o.disabled=!1,i.panelContent={type:"variant-picker",data:{name:c.name||s,sku:c.sku,url:d,price:c.price||"",options:c.options}},i.messages.push({role:"assistant",content:`${c.name||s} \u2014 vyber si variant v paneli vpravo.`,suggestions:[]}),v();return}o.classList.remove("jim2-cart-loading"),o.disabled=!1,d&&(window.open(d,"_blank"),i.messages.push({role:"assistant",content:`Otvoril som ${s} \u2014 pridaj ho do ko\u0161\xEDka tam.`,suggestions:["Zobrazi\u0165 \u010Fal\u0161ie","M\xE1m ot\xE1zku","\u010Eakujem, to je v\u0161etko"]})),v()}});let n=document.getElementById("jim2-variant-back");n&&(n.onclick=()=>{let o=i.messages.filter(s=>s._products).pop();o?i.panelContent={type:"products",title:"N\xE1jden\xE9 produkty",data:o._products}:i.panelContent=null,v()});let r=document.getElementById("jim2-variant-confirm");r&&(r.onclick=async()=>{let o=i.panelContent;if(!o||o.type!=="variant-picker")return;let s=document.querySelectorAll(".jim2-variant-select"),l=[],d=!0;if(s.forEach(m=>{m.value?l.push(m.value):d=!1}),!d){r.textContent="Vyber v\u0161etky mo\u017Enosti!",setTimeout(()=>{r.textContent=g().addToCart},1500);return}r.disabled=!0,r.textContent="Prid\xE1vam...";let c=await q(o.data.sku,1,l);if(c.success){let m=document.querySelector('[data-test="cart-number-of-products"]');m&&c.totalQty&&(m.textContent=c.totalQty);let p=Array.from(s).map(h=>h.options[h.selectedIndex]?.text).join(", ");i.cartItems.push(`${o.data.name} (${p})`),i.panelContent={type:"cart-added",data:{name:`${o.data.name} (${p})`}},i.messages.push({role:"assistant",content:`${o.data.name} (${p}) bol pridan\xFD do ko\u0161\xEDka!`,suggestions:["Zobrazi\u0165 \u010Fal\u0161ie","\xCDs\u0165 do ko\u0161\xEDka","\u010Eakujem, to je v\u0161etko"]})}else i.messages.push({role:"assistant",content:`Nepodarilo sa prida\u0165: ${c.error}. Sk\xFAs to cez str\xE1nku produktu.`,suggestions:["Zobrazi\u0165 \u010Fal\u0161ie"]});v()}),document.querySelectorAll(".jim2-m-meta .jim2-fb-btn").forEach(o=>{o.onclick=()=>{let s=o.closest(".jim2-m-meta"),l=parseInt(s.dataset.msgIdx),d=o.dataset.fb,c=i.messages[l];c&&(c.feedback=c.feedback===d?null:d,rt.info(`[Jim2] Feedback: ${c.feedback??"cleared"} on message #${l}`),c.feedback&&fetch(`${x}/feedback`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({session_id:j,message_id:c.message_id,vote:c.feedback})}).catch(()=>{}),s.querySelectorAll(".jim2-fb-btn").forEach(m=>{m.classList.toggle("jim2-fb-active",m.dataset.fb===c.feedback)}))}})}let rt={info:(...e)=>console.log("[Jim2]",...e)};function Ut(e){let t=g();if(!e)return t.timeNow;let a=Math.floor((Date.now()-e)/6e4);if(a<1)return t.timeNow;if(a<60)return t.timeMin.replace("{n}",a);let n=Math.floor(a/60);return n<24?t.timeHour.replace("{n}",n):t.today.toLowerCase()}function st(){if(!i.messages.length)return"";let e=g(),t=`<div class="jim2-day-divider">${e.today}</div>`;return t+=i.messages.map((a,n)=>{let r=a.role==="user",o=Jt(a.content),s=n===i.messages.length-1,l=!r&&a.suggestions&&s?dt(a.suggestions):"",d=!r&&n>0&&a.message_id?`<div class="jim2-m-meta" data-msg-idx="${n}">
+               <span class="jim2-m-meta-label">${e.rateAnswer}</span>
+               <span class="jim2-m-meta-fb">
+                 <button class="jim2-fb-btn${a.feedback==="up"?" jim2-fb-active":""}" data-fb="up" title="${e.fbGood}">${T.thumbUp}</button>
+                 <button class="jim2-fb-btn${a.feedback==="down"?" jim2-fb-active":""}" data-fb="down" title="${e.fbBad}">${T.thumbDown}</button>
+               </span>
+             </div>`:"";return`
+        <div class="jim2-m-row ${r?"jim2-m-user":"jim2-m-bot"}" data-msg-idx="${n}"${a.message_id?` data-msg-id="${u(String(a.message_id))}"`:""}>
+          ${r?"":H("msg")}
+          <div class="jim2-m-bubble ${r?"jim2-m-bubble-user":"jim2-m-bubble-bot"}">${o}</div>
+        </div>
+        ${d}
+        ${l}
+      `}).join(""),t}function dt(e){return e?.length?`<div class="jim2-m-chips">${e.map(t=>`<button class="jim2-m-chip" data-chip="${u(t)}">${u(t)}</button>`).join("")}</div>`:""}function ct(){return`<div class="jim2-m-row jim2-m-bot">${H("msg")}<div class="jim2-m-bubble jim2-m-bubble-bot"><div class="jim2-typing"><span></span><span></span><span></span></div></div></div>`}function pe(){if(!i.panelContent)return ue();let e=`
+      <button class="jim2-panel-handle" id="jim2-panel-handle" aria-label="Skry\u0165/zobrazi\u0165 produkty" type="button">
+        <span class="jim2-panel-handle-bar"></span>
+      </button>
+    `,t;switch(i.panelContent.type){case"variant-picker":t=ht(i.panelContent);break;case"products":t=gt(i.panelContent);break;case"order":t=vt(i.panelContent);break;case"cart-added":t=bt(i.panelContent);break;default:t=ue()}return e+`<div class="jim2-a-panel-content">${t}</div>`}function ue(){return'<div class="jim2-p-empty"></div>'}let lt='<svg viewBox="0 0 20 15" width="20" height="15" xmlns="http://www.w3.org/2000/svg"><path d="M15.1296 4.55357L13.6787 0H6.32125L4.81865 4.55357H0L0.259068 5.30357L3.47151 15H16.5285L20 4.55357H15.1296ZM7.30569 13.875L6.78756 10.3929H9.37823V13.875H7.30569ZM1.55441 5.73214H4.92228L5.44042 9.21428H2.69431L1.55441 5.73214ZM6.11399 5.73214H9.43006V9.21428H6.63212L6.11399 5.73214ZM10.5181 10.3929H13.1088L12.5907 13.875H10.5181V10.3929ZM10.5181 9.21428V5.73214H13.8342L13.3161 9.21428H10.5181ZM14.9741 5.73214H18.342L17.2021 9.21428H14.4559L14.9741 5.73214ZM7.09846 1.17857H12.7979L13.886 4.55357H5.95855L7.09846 1.17857ZM3.10881 10.3929H5.69949L6.21762 13.875H4.24871L3.10881 10.3929ZM15.6995 13.875H13.7824L14.3005 10.3929H16.8912L15.6995 13.875Z"/></svg>';function mt(e){return`<svg viewBox="0 0 14 13" xmlns="http://www.w3.org/2000/svg"><path d="M13.73 4.98c-.04-.11-.14-.19-.25-.19H8.63L7.13.18A.27.27 0 0 0 6.87 0a.27.27 0 0 0-.25.18L5.11 4.8H.27a.27.27 0 0 0-.16.48l3.92 2.85-1.51 4.64a.27.27 0 0 0 .41.3L6.87 10.2l3.94 2.87a.27.27 0 0 0 .41-.3L9.71 8.13l3.93-2.85a.27.27 0 0 0 .09-.3z" fill="${e}"/></svg>`}function pt(e){let t=Math.max(0,Math.min(5,Number(e)||0)),a=Math.floor(t+.25),n="";for(let r=0;r<5;r++)n+=mt(r<a?"#FF4100":"#959595");return n}function ut(e){if(e==null||e==="")return null;let t=String(e).trim();if(t.includes("\u20AC"))return t;let a=parseFloat(t.replace(",","."));return Number.isNaN(a)?t:a.toFixed(2).replace(".",",")+" \u20AC"}function gt(e){let t=(e.data||[]).filter(a=>a._inStock!==!1);return`
+      <div class="jim2-p-section">
+        <div class="jim2-p-title">${u(e.title||g().panelRecommended)}</div>
+        <div class="jim2-p-products">
+          ${t.map(a=>{let n=ut(a.price),r=a.is_price_from===!0||typeof a.price=="string"&&/^\s*od\b/i.test(a.price),o=n?n.replace(/^\s*od\s+/i,""):null,s=a.discount_percent!=null?Math.round(Number(a.discount_percent)):null,l=Array.isArray(a.labels)?a.labels:[],d=a.rating!=null?Number(a.rating):null,c=a.review_count!=null?Number(a.review_count):null,m=a.price_per_unit?String(a.price_per_unit):null;return`
+            <div class="jim2-p-card">
+              <div class="jim2-p-card-img-wrap">
+                <a class="jim2-p-card-img" href="${xe(a.url)}" target="_blank" rel="noopener">
+                  <img src="${u(a.image||"")}" alt="${u(a.name)}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22><rect fill=%22%23f5f5f5%22 width=%22120%22 height=%22120%22/><text x=%2260%22 y=%2260%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23ccc%22 font-size=%2214%22>GymBeam</text></svg>'"/>
+                </a>
+                ${s?`<div class="jim2-p-card-discount">${g().discountUpTo.replace("{n}",s)}</div>`:""}
+                ${l.length?`<div class="jim2-p-card-labels">${l.map(p=>{let h=String(p).toUpperCase();return`<span class="jim2-p-card-label ${h==="BIO"?"jim2-p-card-label--bio":"jim2-p-card-label--vegan"}">${u(h)}</span>`}).join("")}</div>`:""}
+                <button class="jim2-p-card-cart${a._inStock===!1?" jim2-btn-disabled":""}" ${a._inStock===!1?"disabled":""} data-add-product="${u(String(a.id||a.entity_id||""))}" data-product-name="${u(a.name)}" data-product-url="${u(a.url||"")}" data-product-sku="${u(a.sku||"")}" title="${g().addToCart}">
+                  ${lt}
+                </button>
+              </div>
+              <div class="jim2-p-card-info">
+                <a class="jim2-p-card-name" href="${xe(a.url)}" target="_blank" rel="noopener">${u(a.name)}</a>
+                <div class="jim2-p-card-meta">
+                  ${d!=null?`
+                    <div class="jim2-p-card-rating">
+                      <span class="jim2-p-card-rating-stars">${pt(d)}</span>
+                      <span class="jim2-p-card-rating-text">${d.toFixed(1).replace(".",",")}${c!=null?` (${c})`:""}</span>
+                    </div>`:""}
+                  <div class="jim2-p-card-price-row">
+                    ${o?`
+                      <span class="jim2-p-card-price-main">
+                        ${r?`<span class="jim2-p-card-price-from">${u(g().priceFrom)}</span>`:""}
+                        <span class="jim2-p-card-price">${u(o)}</span>
+                      </span>
+                      ${m?`<span class="jim2-p-card-price-unit">(${u(m)})</span>`:""}
+                    `:`<span class="jim2-price-loading">${g().loadingPrice}</span>`}
+                  </div>
+                </div>
+              </div>
+            </div>
+          `}).join("")}
+        </div>
+      </div>
+    `}function ht(e){let t=e.data;return`
+      <div class="jim2-p-section">
+        <button class="jim2-variant-back" id="jim2-variant-back">\u2190 ${g().backToProducts}</button>
+        <div class="jim2-p-title">${u(t.name)}</div>
+        ${t.price?`<div class="jim2-variant-price">${g().priceFrom} ${u(t.price)}</div>`:""}
+        <div class="jim2-variant-stock">\u25CF ${g().inStock}</div>
+        <div class="jim2-variant-picker">
+          ${t.options.map(a=>`
+            <div class="jim2-variant-group">
+              <label class="jim2-variant-label">${u(a.label)}</label>
+              <select class="jim2-variant-select">
+                <option value="">${g().pickVariant.replace("{opt}",u(a.label.toLowerCase()))}</option>
+                ${a.values.map(n=>`<option value="${u(n.uid)}">${u(n.label)}</option>`).join("")}
+              </select>
+            </div>
+          `).join("")}
+          <button class="jim2-variant-confirm" id="jim2-variant-confirm">
+            ${g().addToCart} \u{1F6D2}
+          </button>
+        </div>
+      </div>
+    `}function vt(e){let t=e.data;return`
+      <div class="jim2-p-section">
+        <div class="jim2-p-title">\u{1F4E6} ${g().orderPanelTitle} ${u(t.order_id)}</div>
+        <div class="jim2-p-order">
+          <div class="jim2-p-order-status">
+            <span class="jim2-p-status-badge">${u(t.status)}</span>
+            ${t.carrier?`<span class="jim2-p-carrier">${u(t.carrier)}</span>`:""}
+          </div>
+          ${t.items?`
+            <div class="jim2-p-order-items">
+              <div class="jim2-p-subtitle">${g().orderItems}</div>
+              ${t.items.map(a=>`<div class="jim2-p-order-item">\u2022 ${u(a)}</div>`).join("")}
+            </div>
+          `:""}
+          ${t.total?`<div class="jim2-p-order-total">${g().orderTotal} ${u(t.total)} ${u(t.currency||"EUR")}</div>`:""}
+        </div>
+      </div>
+    `}function bt(e){return`
+      <div class="jim2-p-section">
+        <button class="jim2-variant-back" id="jim2-variant-back">\u2190 ${g().backToProducts}</button>
+        <div class="jim2-p-title">\u2705 ${g().addedToCart}</div>
+        <div class="jim2-p-cart-added">
+          <div class="jim2-p-cart-product">${u(e.data.name)}</div>
+          <a href="/checkout/cart" class="jim2-go-to-cart">${g().goToCart} \u2192</a>
+          ${i.cartItems.length>1?`
+            <div class="jim2-p-cart-items">
+              <div class="jim2-p-subtitle">${g().addedViaJim} (${i.cartItems.length}):</div>
+              ${i.cartItems.map(t=>`<div class="jim2-p-order-item">\u2022 ${u(t)}</div>`).join("")}
+            </div>
+          `:""}
+        </div>
+      </div>
+    `}function kt(){let e=document.getElementById("jim2-a-messages");e&&(e.scrollTop=e.scrollHeight)}function M(e,t){if(!N()&&e){i.pendingPrefill=e,ie("",t);return}ie(e,t)}document.addEventListener("click",e=>{let t=e.target.closest("[data-action='open']");if(!t)return;e.preventDefault(),e.stopPropagation();let a=t.dataset.prefill||"",n=t.dataset.mode||null;M(a,n)}),document.addEventListener("keydown",e=>{e.key==="Escape"&&i.isOpen&&S()});let ft=()=>window.matchMedia("(max-width: 768px)").matches;document.addEventListener("click",e=>{let t=e.target.closest("a.jim2-msg-link[data-product-link]");t&&ft()&&(t.setAttribute("target","_self"),S())});let jt=35e3,yt=[8e3,16e3],E={order:{sk:["H\u013Ead\xE1m tvoju objedn\xE1vku v syst\xE9me\u2026","Kontrolujem stav u prepravcu, chv\xED\u013Eu to potrv\xE1\u2026"],cs:["Hled\xE1m tvoji objedn\xE1vku v syst\xE9mu\u2026","Kontroluji stav u p\u0159epravce, chv\xEDli to potrv\xE1\u2026"],hu:["Keresem a rendel\xE9sed a rendszerben\u2026","Ellen\u0151rz\xF6m a k\xE9zbes\xEDt\u0151n\xE9l, kis id\u0151be telik\u2026"],de:["Ich suche deine Bestellung im System\u2026","Ich pr\xFCfe den Status beim Versand, einen Moment bitte\u2026"],sl:["I\u0161\u010Dem va\u0161o naro\u010Dilo v sistemu\u2026","Preverjam stanje pri prevozniku, to bo trajalo trenutek\u2026"],ro:["Caut comanda ta \xEEn sistem\u2026","Verific statusul la curier, va dura un moment\u2026"],bg:["\u0422\u044A\u0440\u0441\u044F \u043F\u043E\u0440\u044A\u0447\u043A\u0430\u0442\u0430 \u0442\u0438 \u0432 \u0441\u0438\u0441\u0442\u0435\u043C\u0430\u0442\u0430\u2026","\u041F\u0440\u043E\u0432\u0435\u0440\u044F\u0432\u0430\u043C \u0441\u0442\u0430\u0442\u0443\u0441\u0430 \u043F\u0440\u0438 \u043A\u0443\u0440\u0438\u0435\u0440\u0430, \u0449\u0435 \u043E\u0442\u043D\u0435\u043C\u0435 \u043C\u0430\u043B\u043A\u043E\u2026"],pl:["Szukam twojego zam\xF3wienia w systemie\u2026","Sprawdzam status u przewo\u017Anika, to chwil\u0119 potrwa\u2026"],hr:["Tra\u017Eim va\u0161u narud\u017Ebu u sustavu\u2026","Provjeravam status kod dostavlja\u010Da, trenutak\u2026"],it:["Sto cercando il tuo ordine nel sistema\u2026","Sto verificando lo stato con il corriere, un momento\u2026"],uk:["\u0428\u0443\u043A\u0430\u044E \u0432\u0430\u0448\u0435 \u0437\u0430\u043C\u043E\u0432\u043B\u0435\u043D\u043D\u044F \u0432 \u0441\u0438\u0441\u0442\u0435\u043C\u0456\u2026","\u041F\u0435\u0440\u0435\u0432\u0456\u0440\u044F\u044E \u0441\u0442\u0430\u0442\u0443\u0441 \u0443 \u043F\u0435\u0440\u0435\u0432\u0456\u0437\u043D\u0438\u043A\u0430, \u0437\u0430\u0447\u0435\u043A\u0430\u0439\u0442\u0435 \u0445\u0432\u0438\u043B\u0438\u043D\u043A\u0443\u2026"],nl:["Ik zoek je bestelling in het systeem\u2026","Ik controleer de status bij de bezorger, even geduld\u2026"],fr:["Je recherche votre commande dans le syst\xE8me\u2026","Je v\xE9rifie le statut aupr\xE8s du transporteur, un instant\u2026"],en:["Looking up your order in our system\u2026","Checking with the carrier, this may take a moment\u2026"]},product:{sk:["Prezer\xE1m si produktov\xFD katal\xF3g\u2026","Vyber\xE1m pre teba najlep\u0161ie mo\u017Enosti\u2026"],cs:["Prohl\xED\u017E\xEDm si produktov\xFD katalog\u2026","Vyb\xEDr\xE1m pro tebe nejlep\u0161\xED mo\u017Enosti\u2026"],hu:["\xC1tn\xE9zem a term\xE9kkatal\xF3gust\u2026","A legjobb lehet\u0151s\xE9geket keresem neked\u2026"],de:["Ich durchsuche unseren Produktkatalog\u2026","Ich w\xE4hle die besten Optionen f\xFCr dich aus\u2026"],sl:["Pregledavam katalog izdelkov\u2026","Izbiram najbolj\u0161e mo\u017Enosti za vas\u2026"],ro:["R\u0103sfoiesc catalogul de produse\u2026","Aleg cele mai bune op\u021Biuni pentru tine\u2026"],bg:["\u0420\u0430\u0437\u0433\u043B\u0435\u0436\u0434\u0430\u043C \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u043E\u0432\u0438\u044F \u043A\u0430\u0442\u0430\u043B\u043E\u0433\u2026","\u0418\u0437\u0431\u0438\u0440\u0430\u043C \u043D\u0430\u0439-\u0434\u043E\u0431\u0440\u0438\u0442\u0435 \u0432\u0430\u0440\u0438\u0430\u043D\u0442\u0438 \u0437\u0430 \u0442\u0435\u0431\u2026"],pl:["Przegl\u0105dam katalog produkt\xF3w\u2026","Wybieram dla ciebie najlepsze opcje\u2026"],hr:["Pregledavam katalog proizvoda\u2026","Biram najbolje mogu\u0107nosti za vas\u2026"],it:["Sto sfogliando il catalogo prodotti\u2026","Sto scegliendo le migliori opzioni per te\u2026"],uk:["\u041F\u0435\u0440\u0435\u0433\u043B\u044F\u0434\u0430\u044E \u043A\u0430\u0442\u0430\u043B\u043E\u0433 \u0442\u043E\u0432\u0430\u0440\u0456\u0432\u2026","\u0412\u0438\u0431\u0438\u0440\u0430\u044E \u043D\u0430\u0439\u043A\u0440\u0430\u0449\u0456 \u0432\u0430\u0440\u0456\u0430\u043D\u0442\u0438 \u0434\u043B\u044F \u0432\u0430\u0441\u2026"],nl:["Ik blader door de productcatalogus\u2026","Ik kies de beste opties voor je uit\u2026"],fr:["Je parcours le catalogue de produits\u2026","Je s\xE9lectionne les meilleures options pour vous\u2026"],en:["Searching through our product catalog\u2026","Picking the best options for you\u2026"]},faq:{sk:["Pozer\xE1m sa do n\xE1\u0161ho manu\xE1lu\u2026","E\u0161te chv\xED\u013Eku, overujem odpove\u010F\u2026"],cs:["D\xEDv\xE1m se do na\u0161eho manu\xE1lu\u2026","Je\u0161t\u011B chvilku, ov\u011B\u0159uji odpov\u011B\u010F\u2026"],hu:["Megn\xE9zem a k\xE9zik\xF6nyv\xFCnket\u2026","M\xE9g egy pillanat, ellen\u0151rz\xF6m a v\xE1laszt\u2026"],de:["Ich schaue in unser Handbuch\u2026","Einen Moment noch, ich pr\xFCfe die Antwort\u2026"],sl:["I\u0161\u010Dem v na\u0161i bazi znanja\u2026","Trenutek, preverjam odgovor\u2026"],ro:["Consult baza noastr\u0103 de cuno\u0219tin\u021Be\u2026","Un moment, verific r\u0103spunsul\u2026"],bg:["\u0420\u0430\u0437\u0433\u043B\u0435\u0436\u0434\u0430\u043C \u043D\u0430\u0448\u0430\u0442\u0430 \u0431\u0430\u0437\u0430 \u0437\u043D\u0430\u043D\u0438\u044F\u2026","\u041C\u043E\u043C\u0435\u043D\u0442, \u043F\u0440\u043E\u0432\u0435\u0440\u044F\u0432\u0430\u043C \u043E\u0442\u0433\u043E\u0432\u043E\u0440\u0430\u2026"],pl:["Sprawdzam nasz\u0105 baz\u0119 wiedzy\u2026","Chwileczk\u0119, weryfikuj\u0119 odpowied\u017A\u2026"],hr:["Pregledavam na\u0161u bazu znanja\u2026","Trenutak, provjeravam odgovor\u2026"],it:["Sto consultando la nostra knowledge base\u2026","Un momento, sto verificando la risposta\u2026"],uk:["\u0428\u0443\u043A\u0430\u044E \u0432 \u043D\u0430\u0448\u0456\u0439 \u0431\u0430\u0437\u0456 \u0437\u043D\u0430\u043D\u044C\u2026","\u0425\u0432\u0438\u043B\u0438\u043D\u043A\u0443, \u043F\u0435\u0440\u0435\u0432\u0456\u0440\u044F\u044E \u0432\u0456\u0434\u043F\u043E\u0432\u0456\u0434\u044C\u2026"],nl:["Ik raadpleeg onze kennisbank\u2026","Even geduld, ik controleer het antwoord\u2026"],fr:["Je consulte notre base de connaissances\u2026","Un moment, je v\xE9rifie la r\xE9ponse\u2026"],en:["Looking into our knowledge base\u2026","One moment, verifying the answer\u2026"]},generic:{sk:["E\u0161te chv\xED\u013Eku, prehrab\xE1vam sa v arch\xEDvoch\u2026","St\xE1le na tom pracujem, \u010Fakujem za trpezlivos\u0165\u2026"],cs:["Je\u0161t\u011B chvilku, hrabu se v archivech\u2026","St\xE1le na tom pracuji, d\u011Bkuji za trp\u011Blivost\u2026"],hu:["M\xE9g egy pillanat, kutatok az arch\xEDvumokban\u2026","M\xE9g mindig dolgozom rajta, k\xF6sz\xF6n\xF6m a t\xFCrelmed\u2026"],de:["Einen Moment, ich st\xF6bere in den Archiven\u2026","Ich arbeite noch daran, danke f\xFCr deine Geduld\u2026"],sl:["Trenutek, kopam po arhivih\u2026","\u0160e vedno delam na tem, hvala za potrpljenje\u2026"],ro:["Un moment, caut prin arhive\u2026","\xCEnc\u0103 lucrez la asta, mul\u021Bumesc pentru r\u0103bdare\u2026"],bg:["\u041C\u043E\u043C\u0435\u043D\u0442, \u0440\u043E\u0432\u044F \u0438\u0437 \u0430\u0440\u0445\u0438\u0432\u0438\u0442\u0435\u2026","\u0412\u0441\u0435 \u043E\u0449\u0435 \u0440\u0430\u0431\u043E\u0442\u044F \u043F\u043E \u0442\u043E\u0432\u0430, \u0431\u043B\u0430\u0433\u043E\u0434\u0430\u0440\u044F \u0437\u0430 \u0442\u044A\u0440\u043F\u0435\u043D\u0438\u0435\u0442\u043E\u2026"],pl:["Chwileczk\u0119, przeszukuj\u0119 archiwa\u2026","Ci\u0105gle nad tym pracuj\u0119, dzi\u0119kuj\u0119 za cierpliwo\u015B\u0107\u2026"],hr:["Trenutak, pretra\u017Eujem arhive\u2026","Jo\u0161 uvijek radim na tome, hvala na strpljenju\u2026"],it:["Un momento, sto cercando negli archivi\u2026","Ci sto ancora lavorando, grazie per la pazienza\u2026"],uk:["\u0425\u0432\u0438\u043B\u0438\u043D\u043A\u0443, \u043A\u043E\u043F\u0430\u044E\u0441\u044F \u0432 \u0430\u0440\u0445\u0456\u0432\u0430\u0445\u2026","\u0429\u0435 \u043F\u0440\u0430\u0446\u044E\u044E \u043D\u0430\u0434 \u0446\u0438\u043C, \u0434\u044F\u043A\u0443\u044E \u0437\u0430 \u0442\u0435\u0440\u043F\u0456\u043D\u043D\u044F\u2026"],nl:["Even geduld, ik doorzoek de archieven\u2026","Ik werk er nog aan, bedankt voor je geduld\u2026"],fr:["Un instant, je fouille dans les archives\u2026","Je travaille encore dessus, merci de votre patience\u2026"],en:["One moment, digging through the archives\u2026","Still working on it, thanks for your patience\u2026"]}},ge={sk:"Ospravedl\u0148ujem sa, odpove\u010F mi trv\xE1 dlh\u0161ie, ako by mala. Sk\xFAs to pros\xEDm o chv\xED\u013Eu znova, alebo kontaktuj n\xE1\u0161 z\xE1kazn\xEDcky servis na info@gymbeam.sk.",cs:"Omlouv\xE1m se, odpov\u011B\u010F mi trv\xE1 d\xE9le, ne\u017E by m\u011Bla. Zkus to pros\xEDm za chv\xEDli znovu, nebo kontaktuj na\u0161i z\xE1kaznickou podporu na info@gymbeam.cz.",hu:"Eln\xE9z\xE9st, a v\xE1lasz tov\xE1bb tart a kellet\xE9n\xE9l. K\xE9rlek, pr\xF3b\xE1ld \xFAjra kicsit k\xE9s\u0151bb, vagy vedd fel a kapcsolatot \xFCgyf\xE9lszolg\xE1latunkkal.",de:"Entschuldigung, die Antwort dauert l\xE4nger als erwartet. Bitte versuche es in K\xFCrze erneut oder kontaktiere unseren Kundenservice.",sl:"Opravi\u010Dujem se, odgovor traja dlje kot bi moral. Prosim, poskusite znova \u010Dez trenutek ali kontaktirajte na\u0161o podporo strankam.",ro:"\xCEmi pare r\u0103u, r\u0103spunsul dureaz\u0103 mai mult dec\xE2t ar trebui. Te rog \xEEncearc\u0103 din nou \xEEn scurt timp sau contacteaz\u0103 serviciul nostru clien\u021Bi.",bg:"\u0421\u044A\u0436\u0430\u043B\u044F\u0432\u0430\u043C, \u043E\u0442\u0433\u043E\u0432\u043E\u0440\u044A\u0442 \u043C\u0438 \u043E\u0442\u043D\u0435\u043C\u0430 \u043F\u043E\u0432\u0435\u0447\u0435 \u043E\u0442 \u043E\u0447\u0430\u043A\u0432\u0430\u043D\u043E\u0442\u043E. \u041C\u043E\u043B\u044F, \u043E\u043F\u0438\u0442\u0430\u0439\u0442\u0435 \u043E\u0442\u043D\u043E\u0432\u043E \u0441\u043B\u0435\u0434 \u043C\u0430\u043B\u043A\u043E \u0438\u043B\u0438 \u0441\u0435 \u0441\u0432\u044A\u0440\u0436\u0435\u0442\u0435 \u0441 \u043D\u0430\u0448\u0438\u044F \u043A\u043B\u0438\u0435\u043D\u0442\u0441\u043A\u0438 \u0441\u0435\u0440\u0432\u0438\u0437.",pl:"Przepraszam, odpowied\u017A trwa d\u0142u\u017Cej ni\u017C powinna. Spr\xF3buj ponownie za chwil\u0119 lub skontaktuj si\u0119 z nasz\u0105 obs\u0142ug\u0105 klienta.",hr:"Ispri\u010Davam se, odgovor traje dulje nego \u0161to bi trebao. Molim poku\u0161ajte ponovo za trenutak ili kontaktirajte na\u0161u korisni\u010Dku podr\u0161ku.",it:"Mi dispiace, la risposta sta richiedendo pi\xF9 tempo del previsto. Riprova tra poco o contatta il nostro servizio clienti.",uk:"\u0412\u0438\u0431\u0430\u0447\u0442\u0435, \u0432\u0456\u0434\u043F\u043E\u0432\u0456\u0434\u044C \u0437\u0430\u0439\u043C\u0430\u0454 \u0431\u0456\u043B\u044C\u0448\u0435 \u0447\u0430\u0441\u0443, \u043D\u0456\u0436 \u043E\u0447\u0456\u043A\u0443\u0432\u0430\u043B\u043E\u0441\u044F. \u0421\u043F\u0440\u043E\u0431\u0443\u0439\u0442\u0435 \u0449\u0435 \u0440\u0430\u0437 \u0447\u0435\u0440\u0435\u0437 \u043C\u0438\u0442\u044C \u0430\u0431\u043E \u0437\u0432\u0435\u0440\u043D\u0456\u0442\u044C\u0441\u044F \u0434\u043E \u043D\u0430\u0448\u043E\u0457 \u0441\u043B\u0443\u0436\u0431\u0438 \u043F\u0456\u0434\u0442\u0440\u0438\u043C\u043A\u0438.",nl:"Sorry, mijn antwoord duurt langer dan verwacht. Probeer het over een moment opnieuw of neem contact op met onze klantenservice.",fr:"D\xE9sol\xE9, ma r\xE9ponse prend plus de temps que pr\xE9vu. Veuillez r\xE9essayer dans un moment ou contacter notre service client.",en:"Sorry, my response is taking longer than expected. Please try again shortly, or contact our customer service."},he={sk:"Prep\xE1\u010D, moment\xE1lne sa mi nedar\xED za\u010Da\u0165 nov\xFA konverz\xE1ciu kv\xF4li technick\xE9mu probl\xE9mu. Sk\xFAs to pros\xEDm nesk\xF4r, alebo nap\xED\u0161 n\xE1\u0161mu z\xE1kazn\xEDckemu servisu.",cs:"Omlouv\xE1m se, moment\xE1ln\u011B se mi kv\u016Fli technick\xE9mu probl\xE9mu neda\u0159\xED zah\xE1jit novou konverzaci. Zkus to pros\xEDm pozd\u011Bji, nebo napi\u0161 na\u0161\xED z\xE1kaznick\xE9 podpo\u0159e.",hu:"Eln\xE9z\xE9st, egy technikai probl\xE9ma miatt jelenleg nem tudok \xFAj besz\xE9lget\xE9st ind\xEDtani. K\xE9rlek, pr\xF3b\xE1ld \xFAjra k\xE9s\u0151bb, vagy \xEDrj \xFCgyf\xE9lszolg\xE1latunknak.",de:"Entschuldigung, wegen eines technischen Problems kann ich gerade keine neue Unterhaltung starten. Bitte versuche es sp\xE4ter erneut oder schreibe unserem Kundenservice.",sl:"Opravi\u010Dujem se, zaradi tehni\u010Dne te\u017Eave trenutno ne morem za\u010Deti novega pogovora. Poskusite znova pozneje ali pi\u0161ite na\u0161i podpori strankam.",ro:"\xCEmi pare r\u0103u, din cauza unei probleme tehnice nu pot \xEEncepe momentan o conversa\u021Bie nou\u0103. Te rog \xEEncearc\u0103 mai t\xE2rziu sau scrie serviciului nostru clien\u021Bi.",bg:"\u0421\u044A\u0436\u0430\u043B\u044F\u0432\u0430\u043C, \u043F\u043E\u0440\u0430\u0434\u0438 \u0442\u0435\u0445\u043D\u0438\u0447\u0435\u0441\u043A\u0438 \u043F\u0440\u043E\u0431\u043B\u0435\u043C \u0432 \u043C\u043E\u043C\u0435\u043D\u0442\u0430 \u043D\u0435 \u043C\u043E\u0433\u0430 \u0434\u0430 \u0437\u0430\u043F\u043E\u0447\u043D\u0430 \u043D\u043E\u0432 \u0440\u0430\u0437\u0433\u043E\u0432\u043E\u0440. \u041C\u043E\u043B\u044F, \u043E\u043F\u0438\u0442\u0430\u0439\u0442\u0435 \u043F\u043E-\u043A\u044A\u0441\u043D\u043E \u0438\u043B\u0438 \u043F\u0438\u0448\u0435\u0442\u0435 \u043D\u0430 \u043D\u0430\u0448\u0438\u044F \u043A\u043B\u0438\u0435\u043D\u0442\u0441\u043A\u0438 \u0441\u0435\u0440\u0432\u0438\u0437.",pl:"Przepraszam, z powodu problemu technicznego nie mog\u0119 teraz rozpocz\u0105\u0107 nowej rozmowy. Spr\xF3buj ponownie p\xF3\u017Aniej lub napisz do naszej obs\u0142ugi klienta.",hr:"Ispri\u010Davam se, zbog tehni\u010Dkog problema trenutno ne mogu zapo\u010Deti novi razgovor. Poku\u0161ajte ponovno kasnije ili pi\u0161ite na\u0161oj korisni\u010Dkoj podr\u0161ci.",it:"Mi dispiace, a causa di un problema tecnico al momento non riesco ad avviare una nuova conversazione. Riprova pi\xF9 tardi o scrivi al nostro servizio clienti.",uk:"\u0412\u0438\u0431\u0430\u0447\u0442\u0435, \u0447\u0435\u0440\u0435\u0437 \u0442\u0435\u0445\u043D\u0456\u0447\u043D\u0443 \u043F\u0440\u043E\u0431\u043B\u0435\u043C\u0443 \u044F \u0437\u0430\u0440\u0430\u0437 \u043D\u0435 \u043C\u043E\u0436\u0443 \u0440\u043E\u0437\u043F\u043E\u0447\u0430\u0442\u0438 \u043D\u043E\u0432\u0443 \u0440\u043E\u0437\u043C\u043E\u0432\u0443. \u0421\u043F\u0440\u043E\u0431\u0443\u0439\u0442\u0435 \u043F\u0456\u0437\u043D\u0456\u0448\u0435 \u0430\u0431\u043E \u043D\u0430\u043F\u0438\u0448\u0456\u0442\u044C \u043D\u0430\u0448\u0456\u0439 \u0441\u043B\u0443\u0436\u0431\u0456 \u043F\u0456\u0434\u0442\u0440\u0438\u043C\u043A\u0438.",nl:"Sorry, door een technisch probleem kan ik op dit moment geen nieuw gesprek starten. Probeer het later opnieuw of schrijf onze klantenservice.",fr:"D\xE9sol\xE9, en raison d'un probl\xE8me technique, je ne peux pas d\xE9marrer une nouvelle conversation pour le moment. Veuillez r\xE9essayer plus tard ou \xE9crire \xE0 notre service client.",en:"Sorry, due to a technical issue I can't start a new conversation right now. Please try again later or contact our customer service."},ve={sk:"sk",cz:"cs",hu:"hu",ro:"ro",bg:"bg",de:"de",at:"de",pl:"pl",hr:"hr",si:"sl",it:"it",ua:"uk",nl:"nl",fr:"fr",ba:"bs",gr:"el",rs:"sr",com:"en"},be=Object.keys(ve),wt=ve,ke={sk:"/content/ochrana-osobnych-udajov",cz:"/content/ochrana-osobnich-udaju",hu:"/content/szemelyes-adatok-vedelme",ro:"/content/conditii-de-prelucrare-a-datelor-cu-caracter-personal",bg:"/content/zashtita-na-lichnite-danni",de:"/content/datenschutz",at:"/content/datenschutz",pl:"/content/polityka-prywatnosci",hr:"/content/zastita-osobnih-podataka",si:"/content/pravilnik-o-zasebnosti",it:"/content/protezione-dei-dati-personali",ua:"/ua/content/politika-konfidencijnosti",com:"/content/privacy-policy",nl:"/content/privacy-policy",fr:"/content/privacy-policy"},J={sk:{intro:"Ahoj, som **Jim**, tvoj AI asistent v GymBeame.",welcome:"S \u010D\xEDm ti pom\xF4\u017Eem?",welcomePdp:"Vid\xEDm, \u017Ee sa pozer\xE1\u0161 na {product}. Chce\u0161 o tomto produkte poveda\u0165 viac, alebo h\u013Ead\xE1\u0161 nie\u010Do in\xE9?",welcomeCategory:"Pom\xF4\u017Eem ti s v\xFDberom. Ak\xFD je tvoj cie\u013E \u2014 naberanie svalov, chudnutie, alebo celkov\xE9 zdravie?",welcomeCart:"Vid\xEDm, \u017Ee m\xE1\u0161 nie\u010Do v ko\u0161\xEDku. Chce\u0161 poradi\u0165 s v\xFDberom, alebo doplni\u0165 nie\u010Do, \u010Do ti m\xF4\u017Ee pom\xF4c\u0165?",welcomeAccount:"Ako ti m\xF4\u017Eem pom\xF4c\u0165?",welcomeBlog:"Chce\u0161, aby som ti odporu\u010Dil produkty s\xFAvisiace s t\xFDm, \u010Do \u010D\xEDta\u0161?",chips:["Stav objedn\xE1vky","Vr\xE1tenie tovaru","Reklam\xE1cia tovaru","Zru\u0161enie objedn\xE1vky","Odpor\xFA\u010Danie produktov"],today:"Dnes",timeNow:"pred chv\xED\u013Eou",timeMin:"pred {n} min",timeHour:"pred {n} h",rateAnswer:"Ohodno\u0165 odpove\u010F",fbGood:"Dobr\xE1 odpove\u010F",fbBad:"Zl\xE1 odpove\u010F",disclaimer:"Jim je AI asistent \xB7 m\xF4\u017Ee sa pom\xFDli\u0165.",privacyLink:"Z\xE1sady ochrany \xFAdajov",placeholder:"Nap\xED\u0161 spr\xE1vu Jimovi\u2026",placeholderConsent:"Pred pokra\u010Dovan\xEDm ude\u013E s\xFAhlas \u2191",gdprTitle:"Sk\xF4r ako za\u010Dneme",gdprBody:"Jim pou\u017E\xEDva AI na zodpovedanie tvojich ot\xE1zok. Konverz\xE1cia m\xF4\u017Ee by\u0165 ulo\u017Een\xE1 pre zlep\u0161enie slu\u017Eby. Viac v {link}.",gdprLink:"z\xE1sad\xE1ch ochrany \xFAdajov",gdprPending:"Tvoja ot\xE1zka: {q} \u2014 odo\u0161lem ju hne\u010F po udelen\xED s\xFAhlasu.",gdprAccept:"S\xFAhlas\xEDm a za\u010Da\u0165",gdprDecline:"Nes\xFAhlas\xEDm",gdprDeclinedTitle:"Bez s\xFAhlasu nem\xF4\u017Eeme pokra\u010Dova\u0165",gdprDeclinedBody:"Pre chat s Jimom je potrebn\xE9 udeli\u0165 s\xFAhlas so spracovan\xEDm spr\xE1v. Ak si si to rozmyslel, m\xF4\u017Ee\u0161 ho udeli\u0165 teraz.",gdprReset:"Udeli\u0165 s\xFAhlas",panelRecommended:"Odpor\xFA\u010Dan\xE9 produkty",addToCart:"Prida\u0165 do ko\u0161\xEDka",priceFrom:"od",loadingPrice:"Na\u010D\xEDtavam\u2026",backToProducts:"Sp\xE4\u0165 na produkty",inStock:"Skladom",pickVariant:"Vyber {opt}",orderPanelTitle:"Objedn\xE1vka",orderItems:"Polo\u017Eky:",orderTotal:"Celkom:",addedToCart:"Pridan\xE9 do ko\u0161\xEDka",goToCart:"Prejs\u0165 do ko\u0161\xEDka",addedViaJim:"Pridan\xE9 cez Jima",discountUpTo:"A\u017D \u2013{n} %"},cs:{intro:"Ahoj, jsem **Jim**, tv\u016Fj AI asistent v GymBeamu.",welcome:"S \u010D\xEDm ti pom\u016F\u017Eu?",welcomePdp:"Vid\xEDm, \u017Ee se d\xEDv\xE1\u0161 na {product}. Chce\u0161 o tomto produktu \u0159\xEDct v\xEDc, nebo hled\xE1\u0161 n\u011Bco jin\xE9ho?",welcomeCategory:"Pom\u016F\u017Eu ti s v\xFDb\u011Brem. Jak\xFD je tv\u016Fj c\xEDl \u2014 nab\xEDr\xE1n\xED sval\u016F, hubnut\xED, nebo celkov\xE9 zdrav\xED?",welcomeCart:"Vid\xEDm, \u017Ee m\xE1\u0161 n\u011Bco v ko\u0161\xEDku. Chce\u0161 poradit s v\xFDb\u011Brem, nebo doplnit n\u011Bco, co ti m\u016F\u017Ee pomoct?",welcomeAccount:"Jak ti m\u016F\u017Eu pomoct?",welcomeBlog:"Chce\u0161, abych ti doporu\u010Dil produkty souvisej\xEDc\xED s t\xEDm, co \u010Dte\u0161?",chips:["Stav objedn\xE1vky","Vr\xE1cen\xED zbo\u017E\xED","Reklamace zbo\u017E\xED","Zru\u0161en\xED objedn\xE1vky","Doporu\u010Den\xED produkt\u016F"],today:"Dnes",timeNow:"p\u0159ed chv\xEDl\xED",timeMin:"p\u0159ed {n} min",timeHour:"p\u0159ed {n} h",rateAnswer:"Ohodno\u0165 odpov\u011B\u010F",fbGood:"Dobr\xE1 odpov\u011B\u010F",fbBad:"\u0160patn\xE1 odpov\u011B\u010F",disclaimer:"Jim je AI asistent \xB7 m\u016F\u017Ee se m\xFDlit.",privacyLink:"Z\xE1sady ochrany \xFAdaj\u016F",placeholder:"Napi\u0161 zpr\xE1vu Jimovi\u2026",placeholderConsent:"P\u0159ed pokra\u010Dov\xE1n\xEDm udel souhlas \u2191",gdprTitle:"Ne\u017E za\u010Dneme",gdprBody:"Jim pou\u017E\xEDv\xE1 AI k zodpov\u011Bzen\xED tv\xFDch ot\xE1zek. Konverzace m\u016F\u017Ee b\xFDt ulo\u017Eena pro zlep\u0161en\xED slu\u017Eby. V\xEDce v {link}.",gdprLink:"z\xE1sad\xE1ch ochrany \xFAdaj\u016F",gdprPending:"Tvoje ot\xE1zka: {q} \u2014 ode\u0161lu ji hned po ud\u011Blen\xED souhlasu.",gdprAccept:"Souhlas\xEDm a za\u010D\xEDt",gdprDecline:"Nesouhlas\xEDm",gdprDeclinedTitle:"Bez souhlasu nem\u016F\u017Eeme pokra\u010Dovat",gdprDeclinedBody:"Pro chat s Jimem je pot\u0159eba ud\u011Blit souhlas se zpracov\xE1n\xEDm zpr\xE1v. Pokud sis to rozmyslel, m\u016F\u017Ee\u0161 ho ud\u011Blit te\u010F.",gdprReset:"Ud\u011Blit souhlas",panelRecommended:"Doporu\u010Den\xE9 produkty",addToCart:"P\u0159idat do ko\u0161\xEDku",priceFrom:"od",loadingPrice:"Na\u010D\xEDt\xE1m\u2026",backToProducts:"Zp\u011Bt na produkty",inStock:"Skladem",pickVariant:"Vyber {opt}",orderPanelTitle:"Objedn\xE1vka",orderItems:"Polo\u017Eky:",orderTotal:"Celkem:",addedToCart:"P\u0159id\xE1no do ko\u0161\xEDku",goToCart:"P\u0159ej\xEDt do ko\u0161\xEDku",addedViaJim:"P\u0159id\xE1no p\u0159es Jima",discountUpTo:"A\u017D \u2013{n} %"},en:{intro:"Hi, I'm **Jim**, your AI assistant at GymBeam.",welcome:"How can I help you?",welcomePdp:"I see you're looking at {product}. Want to know more about this product, or are you after something else?",welcomeCategory:"I'll help you choose. What's your goal \u2014 building muscle, losing weight, or overall health?",welcomeCart:"I see you have something in your cart. Want help choosing, or to add something that could help you?",welcomeAccount:"How can I help you?",welcomeBlog:"Want me to recommend products related to what you're reading?",chips:["Order status","Return goods","File a complaint","Cancel order","Product recommendations"],today:"Today",timeNow:"just now",timeMin:"{n} min ago",timeHour:"{n} h ago",rateAnswer:"Rate the answer",fbGood:"Good answer",fbBad:"Bad answer",disclaimer:"Jim is an AI assistant \xB7 it can make mistakes.",privacyLink:"Privacy Policy",placeholder:"Write a message to Jim\u2026",placeholderConsent:"Grant consent above to continue \u2191",gdprTitle:"Before we begin",gdprBody:"Jim uses AI to answer your questions. The conversation may be stored to improve the service. More in our {link}.",gdprLink:"privacy policy",gdprPending:"Your question: {q} \u2014 I'll send it as soon as you give consent.",gdprAccept:"Agree and start",gdprDecline:"Disagree",gdprDeclinedTitle:"We can't continue without consent",gdprDeclinedBody:"To chat with Jim, you need to consent to message processing. If you've changed your mind, you can give consent now.",gdprReset:"Give consent",panelRecommended:"Recommended products",addToCart:"Add to cart",priceFrom:"from",loadingPrice:"Loading\u2026",backToProducts:"Back to products",inStock:"In stock",pickVariant:"Select {opt}",orderPanelTitle:"Order",orderItems:"Items:",orderTotal:"Total:",addedToCart:"Added to cart",goToCart:"Go to cart",addedViaJim:"Added via Jim",discountUpTo:"UP TO \u2013{n} %"},de:{intro:"Hi, ich bin **Jim**, dein KI-Assistent von GymBeam.",welcome:"Wie kann ich dir helfen?",welcomePdp:"Ich sehe, du schaust dir {product} an. M\xF6chtest du mehr \xFCber dieses Produkt erfahren oder suchst du etwas anderes?",welcomeCategory:"Ich helfe dir bei der Auswahl. Was ist dein Ziel \u2014 Muskelaufbau, Abnehmen oder allgemeine Gesundheit?",welcomeCart:"Ich sehe, du hast etwas im Warenkorb. M\xF6chtest du Hilfe bei der Auswahl oder etwas Passendes erg\xE4nzen?",welcomeAccount:"Wie kann ich dir helfen?",welcomeBlog:"Soll ich dir Produkte passend zu dem empfehlen, was du gerade liest?",chips:["Bestellstatus","R\xFCcksendung","Reklamation","Bestellung stornieren","Produktempfehlungen"],today:"Heute",timeNow:"gerade eben",timeMin:"vor {n} Min.",timeHour:"vor {n} Std.",rateAnswer:"Antwort bewerten",fbGood:"Gute Antwort",fbBad:"Schlechte Antwort",disclaimer:"Jim ist ein KI-Assistent \xB7 er kann sich irren.",privacyLink:"Datenschutz",placeholder:"Schreib Jim eine Nachricht\u2026",placeholderConsent:"Bitte oben zustimmen, um fortzufahren \u2191",gdprTitle:"Bevor wir beginnen",gdprBody:"Jim verwendet KI, um deine Fragen zu beantworten. Die Konversation kann zur Verbesserung des Service gespeichert werden. Mehr in unserer {link}.",gdprLink:"Datenschutzerkl\xE4rung",gdprPending:"Deine Frage: {q} \u2014 ich sende sie, sobald du zugestimmt hast.",gdprAccept:"Zustimmen und starten",gdprDecline:"Ablehnen",gdprDeclinedTitle:"Ohne Zustimmung k\xF6nnen wir nicht fortfahren",gdprDeclinedBody:"Um mit Jim zu chatten, musst du der Verarbeitung der Nachrichten zustimmen. Wenn du es dir anders \xFCberlegt hast, kannst du jetzt zustimmen.",gdprReset:"Zustimmen",panelRecommended:"Empfohlene Produkte",addToCart:"In den Warenkorb",priceFrom:"ab",loadingPrice:"L\xE4dt\u2026",backToProducts:"Zur\xFCck zu den Produkten",inStock:"Auf Lager",pickVariant:"{opt} w\xE4hlen",orderPanelTitle:"Bestellung",orderItems:"Artikel:",orderTotal:"Gesamt:",addedToCart:"In den Warenkorb gelegt",goToCart:"Zum Warenkorb",addedViaJim:"\xDCber Jim hinzugef\xFCgt",discountUpTo:"BIS ZU \u2013{n} %"},pl:{intro:"Cze\u015B\u0107, jestem **Jim**, Tw\xF3j asystent AI w GymBeam.",welcome:"W czym mog\u0119 Ci pom\xF3c?",welcomePdp:"Widz\u0119, \u017Ce ogl\u0105dasz {product}. Chcesz dowiedzie\u0107 si\u0119 wi\u0119cej o tym produkcie, czy szukasz czego\u015B innego?",welcomeCategory:"Pomog\u0119 Ci wybra\u0107. Jaki jest Tw\xF3j cel \u2014 budowa mi\u0119\u015Bni, odchudzanie czy og\xF3lne zdrowie?",welcomeCart:"Widz\u0119, \u017Ce masz co\u015B w koszyku. Chcesz pomocy w wyborze albo doda\u0107 co\u015B, co mo\u017Ce Ci pom\xF3c?",welcomeAccount:"Jak mog\u0119 Ci pom\xF3c?",welcomeBlog:"Chcesz, \u017Cebym poleci\u0142 produkty zwi\u0105zane z tym, co czytasz?",chips:["Status zam\xF3wienia","Zwrot towaru","Reklamacja","Anulowanie zam\xF3wienia","Polecane produkty"],today:"Dzi\u015B",timeNow:"przed chwil\u0105",timeMin:"{n} min temu",timeHour:"{n} godz. temu",rateAnswer:"Oce\u0144 odpowied\u017A",fbGood:"Dobra odpowied\u017A",fbBad:"Z\u0142a odpowied\u017A",disclaimer:"Jim to asystent AI \xB7 mo\u017Ce si\u0119 myli\u0107.",privacyLink:"Polityka prywatno\u015Bci",placeholder:"Napisz wiadomo\u015B\u0107 do Jima\u2026",placeholderConsent:"Wyra\u017A zgod\u0119 powy\u017Cej, aby kontynuowa\u0107 \u2191",gdprTitle:"Zanim zaczniemy",gdprBody:"Jim u\u017Cywa AI do odpowiadania na Twoje pytania. Rozmowa mo\u017Ce zosta\u0107 zapisana w celu ulepszenia us\u0142ugi. Wi\u0119cej w {link}.",gdprLink:"polityce prywatno\u015Bci",gdprPending:"Twoje pytanie: {q} \u2014 wy\u015Bl\u0119 je zaraz po wyra\u017Ceniu zgody.",gdprAccept:"Zgadzam si\u0119 i zaczynam",gdprDecline:"Nie zgadzam si\u0119",gdprDeclinedTitle:"Bez zgody nie mo\u017Cemy kontynuowa\u0107",gdprDeclinedBody:"Aby rozmawia\u0107 z Jimem, musisz wyrazi\u0107 zgod\u0119 na przetwarzanie wiadomo\u015Bci. Je\u015Bli zmieni\u0142e\u015B zdanie, mo\u017Cesz wyrazi\u0107 j\u0105 teraz.",gdprReset:"Wyra\u017A zgod\u0119",panelRecommended:"Polecane produkty",addToCart:"Dodaj do koszyka",priceFrom:"od",loadingPrice:"\u0141adowanie\u2026",backToProducts:"Wr\xF3\u0107 do produkt\xF3w",inStock:"W magazynie",pickVariant:"Wybierz {opt}",orderPanelTitle:"Zam\xF3wienie",orderItems:"Pozycje:",orderTotal:"Razem:",addedToCart:"Dodano do koszyka",goToCart:"Przejd\u017A do koszyka",addedViaJim:"Dodane przez Jima",discountUpTo:"DO \u2013{n} %"},hu:{intro:"Szia, **Jim** vagyok, a GymBeam AI asszisztensed.",welcome:"Miben seg\xEDthetek?",welcomePdp:"L\xE1tom, hogy a(z) {product} term\xE9ket n\xE9zed. Szeretn\xE9l t\xF6bbet megtudni r\xF3la, vagy valami m\xE1st keresel?",welcomeCategory:"Seg\xEDtek a v\xE1laszt\xE1sban. Mi a c\xE9lod \u2014 izom\xE9p\xEDt\xE9s, fogy\xE1s vagy \xE1ltal\xE1nos eg\xE9szs\xE9g?",welcomeCart:"L\xE1tom, van valami a kosaradban. Seg\xEDtsek a v\xE1laszt\xE1sban, vagy aj\xE1nljak valamit, ami hasznos lehet?",welcomeAccount:"Miben seg\xEDthetek?",welcomeBlog:"Aj\xE1nljak term\xE9keket ahhoz, amit \xE9ppen olvasol?",chips:["Rendel\xE9s \xE1llapota","Term\xE9k visszak\xFCld\xE9se","Reklam\xE1ci\xF3","Rendel\xE9s lemond\xE1sa","Term\xE9kaj\xE1nl\xE1s"],today:"Ma",timeNow:"az im\xE9nt",timeMin:"{n} perce",timeHour:"{n} \xF3r\xE1ja",rateAnswer:"\xC9rt\xE9keld a v\xE1laszt",fbGood:"J\xF3 v\xE1lasz",fbBad:"Rossz v\xE1lasz",disclaimer:"Jim egy AI asszisztens \xB7 t\xE9vedhet.",privacyLink:"Adatv\xE9delmi t\xE1j\xE9koztat\xF3",placeholder:"\xCDrj \xFCzenetet Jimnek\u2026",placeholderConsent:"A folytat\xE1shoz fogadd el a felt\xE9teleket \u2191",gdprTitle:"Miel\u0151tt elkezdj\xFCk",gdprBody:"Jim AI-t haszn\xE1l a k\xE9rd\xE9seid megv\xE1laszol\xE1s\xE1hoz. A besz\xE9lget\xE9s a szolg\xE1ltat\xE1s jav\xEDt\xE1sa \xE9rdek\xE9ben t\xE1rolhat\xF3. B\u0151vebben az {link}.",gdprLink:"adatv\xE9delmi t\xE1j\xE9koztat\xF3ban",gdprPending:"A k\xE9rd\xE9sed: {q} \u2014 a hozz\xE1j\xE1rul\xE1s megad\xE1sa ut\xE1n azonnal elk\xFCld\xF6m.",gdprAccept:"Elfogadom \xE9s kezdj\xFCk",gdprDecline:"Nem fogadom el",gdprDeclinedTitle:"Hozz\xE1j\xE1rul\xE1s n\xE9lk\xFCl nem folytathatjuk",gdprDeclinedBody:"A Jimmel val\xF3 cseveg\xE9shez hozz\xE1 kell j\xE1rulnod az \xFCzenetek feldolgoz\xE1s\xE1hoz. Ha meggondoltad magad, most megadhatod.",gdprReset:"Hozz\xE1j\xE1rulok",panelRecommended:"Aj\xE1nlott term\xE9kek",addToCart:"Kos\xE1rba",priceFrom:"min.",loadingPrice:"Bet\xF6lt\xE9s\u2026",backToProducts:"Vissza a term\xE9kekhez",inStock:"K\xE9szleten",pickVariant:"V\xE1lassz: {opt}",orderPanelTitle:"Rendel\xE9s",orderItems:"T\xE9telek:",orderTotal:"\xD6sszesen:",addedToCart:"Kos\xE1rba t\xE9ve",goToCart:"Tov\xE1bb a kos\xE1rhoz",addedViaJim:"Jim \xE1ltal hozz\xE1adva",discountUpTo:"AK\xC1R \u2013{n} %"},ro:{intro:"Salut, sunt **Jim**, asistentul t\u0103u AI de la GymBeam.",welcome:"Cu ce te pot ajuta?",welcomePdp:"V\u0103d c\u0103 te ui\u021Bi la {product}. Vrei s\u0103 afli mai multe despre acest produs sau cau\u021Bi altceva?",welcomeCategory:"Te ajut s\u0103 alegi. Care este obiectivul t\u0103u \u2014 cre\u0219terea masei musculare, sl\u0103bire sau s\u0103n\u0103tate general\u0103?",welcomeCart:"V\u0103d c\u0103 ai ceva \xEEn co\u0219. Vrei ajutor la alegere sau s\u0103 adaugi ceva ce te-ar putea ajuta?",welcomeAccount:"Cu ce te pot ajuta?",welcomeBlog:"Vrei s\u0103-\u021Bi recomand produse legate de ceea ce cite\u0219ti?",chips:["Starea comenzii","Returnare produse","Reclama\u021Bie","Anulare comand\u0103","Recomand\u0103ri produse"],today:"Azi",timeNow:"chiar acum",timeMin:"acum {n} min",timeHour:"acum {n} h",rateAnswer:"Evalueaz\u0103 r\u0103spunsul",fbGood:"R\u0103spuns bun",fbBad:"R\u0103spuns slab",disclaimer:"Jim este un asistent AI \xB7 poate gre\u0219i.",privacyLink:"Politica de confiden\u021Bialitate",placeholder:"Scrie-i un mesaj lui Jim\u2026",placeholderConsent:"Acord\u0103 consim\u021B\u0103m\xE2ntul de mai sus pentru a continua \u2191",gdprTitle:"\xCEnainte s\u0103 \xEEncepem",gdprBody:"Jim folose\u0219te AI pentru a r\u0103spunde la \xEEntreb\u0103rile tale. Conversa\u021Bia poate fi stocat\u0103 pentru \xEEmbun\u0103t\u0103\u021Birea serviciului. Mai multe \xEEn {link}.",gdprLink:"politica de confiden\u021Bialitate",gdprPending:"\xCEntrebarea ta: {q} \u2014 o trimit imediat ce \xEE\u021Bi dai consim\u021B\u0103m\xE2ntul.",gdprAccept:"Accept \u0219i \xEEncep",gdprDecline:"Nu sunt de acord",gdprDeclinedTitle:"Nu putem continua f\u0103r\u0103 consim\u021B\u0103m\xE2nt",gdprDeclinedBody:"Pentru a discuta cu Jim, trebuie s\u0103 \xEE\u021Bi dai consim\u021B\u0103m\xE2ntul pentru procesarea mesajelor. Dac\u0103 te-ai r\u0103zg\xE2ndit, \xEEl po\u021Bi acorda acum.",gdprReset:"Acord\u0103 consim\u021B\u0103m\xE2ntul",panelRecommended:"Produse recomandate",addToCart:"Adaug\u0103 \xEEn co\u0219",priceFrom:"de la",loadingPrice:"Se \xEEncarc\u0103\u2026",backToProducts:"\xCEnapoi la produse",inStock:"\xCEn stoc",pickVariant:"Alege {opt}",orderPanelTitle:"Comand\u0103",orderItems:"Produse:",orderTotal:"Total:",addedToCart:"Ad\u0103ugat \xEEn co\u0219",goToCart:"Mergi la co\u0219",addedViaJim:"Ad\u0103ugat prin Jim",discountUpTo:"P\xC2N\u0102 LA \u2013{n} %"},bg:{intro:"\u0417\u0434\u0440\u0430\u0432\u0435\u0439, \u0430\u0437 \u0441\u044A\u043C **Jim**, \u0442\u0432\u043E\u044F\u0442 AI \u0430\u0441\u0438\u0441\u0442\u0435\u043D\u0442 \u0432 GymBeam.",welcome:"\u0421 \u043A\u0430\u043A\u0432\u043E \u043C\u043E\u0433\u0430 \u0434\u0430 \u0442\u0438 \u043F\u043E\u043C\u043E\u0433\u043D\u0430?",welcomePdp:"\u0412\u0438\u0436\u0434\u0430\u043C, \u0447\u0435 \u0440\u0430\u0437\u0433\u043B\u0435\u0436\u0434\u0430\u0448 {product}. \u0418\u0441\u043A\u0430\u0448 \u043B\u0438 \u0434\u0430 \u043D\u0430\u0443\u0447\u0438\u0448 \u043F\u043E\u0432\u0435\u0447\u0435 \u0437\u0430 \u0442\u043E\u0437\u0438 \u043F\u0440\u043E\u0434\u0443\u043A\u0442, \u0438\u043B\u0438 \u0442\u044A\u0440\u0441\u0438\u0448 \u043D\u0435\u0449\u043E \u0434\u0440\u0443\u0433\u043E?",welcomeCategory:"\u0429\u0435 \u0442\u0438 \u043F\u043E\u043C\u043E\u0433\u043D\u0430 \u0434\u0430 \u0438\u0437\u0431\u0435\u0440\u0435\u0448. \u041A\u0430\u043A\u0432\u0430 \u0435 \u0446\u0435\u043B\u0442\u0430 \u0442\u0438 \u2014 \u0438\u0437\u0433\u0440\u0430\u0436\u0434\u0430\u043D\u0435 \u043D\u0430 \u043C\u0443\u0441\u043A\u0443\u043B\u0438, \u043E\u0442\u0441\u043B\u0430\u0431\u0432\u0430\u043D\u0435 \u0438\u043B\u0438 \u043E\u0431\u0449\u043E \u0437\u0434\u0440\u0430\u0432\u0435?",welcomeCart:"\u0412\u0438\u0436\u0434\u0430\u043C, \u0447\u0435 \u0438\u043C\u0430\u0448 \u043D\u0435\u0449\u043E \u0432 \u043A\u043E\u043B\u0438\u0447\u043A\u0430\u0442\u0430. \u0418\u0441\u043A\u0430\u0448 \u043B\u0438 \u043F\u043E\u043C\u043E\u0449 \u043F\u0440\u0438 \u0438\u0437\u0431\u043E\u0440\u0430, \u0438\u043B\u0438 \u0434\u0430 \u0434\u043E\u0431\u0430\u0432\u0438\u0448 \u043D\u0435\u0449\u043E \u043F\u043E\u043B\u0435\u0437\u043D\u043E?",welcomeAccount:"\u0421 \u043A\u0430\u043A\u0432\u043E \u043C\u043E\u0433\u0430 \u0434\u0430 \u0442\u0438 \u043F\u043E\u043C\u043E\u0433\u043D\u0430?",welcomeBlog:"\u0418\u0441\u043A\u0430\u0448 \u043B\u0438 \u0434\u0430 \u0442\u0438 \u043F\u0440\u0435\u043F\u043E\u0440\u044A\u0447\u0430\u043C \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0438, \u0441\u0432\u044A\u0440\u0437\u0430\u043D\u0438 \u0441 \u0442\u043E\u0432\u0430, \u043A\u043E\u0435\u0442\u043E \u0447\u0435\u0442\u0435\u0448?",chips:["\u0421\u0442\u0430\u0442\u0443\u0441 \u043D\u0430 \u043F\u043E\u0440\u044A\u0447\u043A\u0430","\u0412\u0440\u044A\u0449\u0430\u043D\u0435 \u043D\u0430 \u0441\u0442\u043E\u043A\u0430","\u0420\u0435\u043A\u043B\u0430\u043C\u0430\u0446\u0438\u044F","\u041E\u0442\u043A\u0430\u0437 \u043D\u0430 \u043F\u043E\u0440\u044A\u0447\u043A\u0430","\u041F\u0440\u0435\u043F\u043E\u0440\u044A\u043A\u0438 \u0437\u0430 \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0438"],today:"\u0414\u043D\u0435\u0441",timeNow:"\u0442\u043E\u043A\u0443-\u0449\u043E",timeMin:"\u043F\u0440\u0435\u0434\u0438 {n} \u043C\u0438\u043D",timeHour:"\u043F\u0440\u0435\u0434\u0438 {n} \u0447",rateAnswer:"\u041E\u0446\u0435\u043D\u0438 \u043E\u0442\u0433\u043E\u0432\u043E\u0440\u0430",fbGood:"\u0414\u043E\u0431\u044A\u0440 \u043E\u0442\u0433\u043E\u0432\u043E\u0440",fbBad:"\u041B\u043E\u0448 \u043E\u0442\u0433\u043E\u0432\u043E\u0440",disclaimer:"Jim \u0435 AI \u0430\u0441\u0438\u0441\u0442\u0435\u043D\u0442 \xB7 \u043C\u043E\u0436\u0435 \u0434\u0430 \u0441\u0433\u0440\u0435\u0448\u0438.",privacyLink:"\u0417\u0430\u0449\u0438\u0442\u0430 \u043D\u0430 \u043B\u0438\u0447\u043D\u0438\u0442\u0435 \u0434\u0430\u043D\u043D\u0438",placeholder:"\u041D\u0430\u043F\u0438\u0448\u0438 \u0441\u044A\u043E\u0431\u0449\u0435\u043D\u0438\u0435 \u0434\u043E Jim\u2026",placeholderConsent:"\u0414\u0430\u0439 \u0441\u044A\u0433\u043B\u0430\u0441\u0438\u0435 \u043F\u043E-\u0433\u043E\u0440\u0435, \u0437\u0430 \u0434\u0430 \u043F\u0440\u043E\u0434\u044A\u043B\u0436\u0438\u0448 \u2191",gdprTitle:"\u041F\u0440\u0435\u0434\u0438 \u0434\u0430 \u0437\u0430\u043F\u043E\u0447\u043D\u0435\u043C",gdprBody:"Jim \u0438\u0437\u043F\u043E\u043B\u0437\u0432\u0430 AI, \u0437\u0430 \u0434\u0430 \u043E\u0442\u0433\u043E\u0432\u0430\u0440\u044F \u043D\u0430 \u0432\u044A\u043F\u0440\u043E\u0441\u0438\u0442\u0435 \u0442\u0438. \u0420\u0430\u0437\u0433\u043E\u0432\u043E\u0440\u044A\u0442 \u043C\u043E\u0436\u0435 \u0434\u0430 \u0431\u044A\u0434\u0435 \u0437\u0430\u043F\u0430\u0437\u0435\u043D \u0441 \u0446\u0435\u043B \u043F\u043E\u0434\u043E\u0431\u0440\u044F\u0432\u0430\u043D\u0435 \u043D\u0430 \u0443\u0441\u043B\u0443\u0433\u0430\u0442\u0430. \u041F\u043E\u0432\u0435\u0447\u0435 \u0432 {link}.",gdprLink:"\u0437\u0430\u0449\u0438\u0442\u0430\u0442\u0430 \u043D\u0430 \u043B\u0438\u0447\u043D\u0438\u0442\u0435 \u0434\u0430\u043D\u043D\u0438",gdprPending:"\u0422\u0432\u043E\u044F\u0442 \u0432\u044A\u043F\u0440\u043E\u0441: {q} \u2014 \u0449\u0435 \u0433\u043E \u0438\u0437\u043F\u0440\u0430\u0442\u044F \u0432\u0435\u0434\u043D\u0430\u0433\u0430 \u0449\u043E\u043C \u0434\u0430\u0434\u0435\u0448 \u0441\u044A\u0433\u043B\u0430\u0441\u0438\u0435.",gdprAccept:"\u0421\u044A\u0433\u043B\u0430\u0441\u044F\u0432\u0430\u043C \u0441\u0435 \u0438 \u0437\u0430\u043F\u043E\u0447\u0432\u0430\u043C",gdprDecline:"\u041D\u0435 \u0441\u044A\u043C \u0441\u044A\u0433\u043B\u0430\u0441\u0435\u043D",gdprDeclinedTitle:"\u041D\u0435 \u043C\u043E\u0436\u0435\u043C \u0434\u0430 \u043F\u0440\u043E\u0434\u044A\u043B\u0436\u0438\u043C \u0431\u0435\u0437 \u0441\u044A\u0433\u043B\u0430\u0441\u0438\u0435",gdprDeclinedBody:"\u0417\u0430 \u0434\u0430 \u0440\u0430\u0437\u0433\u043E\u0432\u0430\u0440\u044F\u0448 \u0441 Jim, \u0442\u0440\u044F\u0431\u0432\u0430 \u0434\u0430 \u0434\u0430\u0434\u0435\u0448 \u0441\u044A\u0433\u043B\u0430\u0441\u0438\u0435 \u0437\u0430 \u043E\u0431\u0440\u0430\u0431\u043E\u0442\u043A\u0430 \u043D\u0430 \u0441\u044A\u043E\u0431\u0449\u0435\u043D\u0438\u044F\u0442\u0430. \u0410\u043A\u043E \u0441\u0438 \u0440\u0430\u0437\u043C\u0438\u0441\u043B\u0438\u043B, \u043C\u043E\u0436\u0435\u0448 \u0434\u0430 \u0433\u043E \u0434\u0430\u0434\u0435\u0448 \u0441\u0435\u0433\u0430.",gdprReset:"\u0414\u0430\u0439 \u0441\u044A\u0433\u043B\u0430\u0441\u0438\u0435",panelRecommended:"\u041F\u0440\u0435\u043F\u043E\u0440\u044A\u0447\u0430\u043D\u0438 \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0438",addToCart:"\u0414\u043E\u0431\u0430\u0432\u0438 \u0432 \u043A\u043E\u043B\u0438\u0447\u043A\u0430\u0442\u0430",priceFrom:"\u043E\u0442",loadingPrice:"\u0417\u0430\u0440\u0435\u0436\u0434\u0430\u043D\u0435\u2026",backToProducts:"\u041E\u0431\u0440\u0430\u0442\u043D\u043E \u043A\u044A\u043C \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0438\u0442\u0435",inStock:"\u0412 \u043D\u0430\u043B\u0438\u0447\u043D\u043E\u0441\u0442",pickVariant:"\u0418\u0437\u0431\u0435\u0440\u0435\u0442\u0435 {opt}",orderPanelTitle:"\u041F\u043E\u0440\u044A\u0447\u043A\u0430",orderItems:"\u0410\u0440\u0442\u0438\u043A\u0443\u043B\u0438:",orderTotal:"\u041E\u0431\u0449\u043E:",addedToCart:"\u0414\u043E\u0431\u0430\u0432\u0435\u043D\u043E \u0432 \u043A\u043E\u043B\u0438\u0447\u043A\u0430\u0442\u0430",goToCart:"\u041A\u044A\u043C \u043A\u043E\u043B\u0438\u0447\u043A\u0430\u0442\u0430",addedViaJim:"\u0414\u043E\u0431\u0430\u0432\u0435\u043D\u043E \u0447\u0440\u0435\u0437 Jim",discountUpTo:"\u0414\u041E \u2013{n} %"},hr:{intro:"Bok, ja sam **Jim**, tvoj AI asistent u GymBeamu.",welcome:"Kako ti mogu pomo\u0107i?",welcomePdp:"Vidim da gleda\u0161 {product}. \u017Deli\u0161 li saznati vi\u0161e o ovom proizvodu ili tra\u017Ei\u0161 ne\u0161to drugo?",welcomeCategory:"Pomo\u0107i \u0107u ti pri odabiru. Koji je tvoj cilj \u2014 izgradnja mi\u0161i\u0107a, mr\u0161avljenje ili op\u0107e zdravlje?",welcomeCart:"Vidim da ima\u0161 ne\u0161to u ko\u0161arici. \u017Deli\u0161 li pomo\u0107 pri odabiru ili dodati ne\u0161to \u0161to ti mo\u017Ee pomo\u0107i?",welcomeAccount:"Kako ti mogu pomo\u0107i?",welcomeBlog:"\u017Deli\u0161 li da ti preporu\u010Dim proizvode vezane uz ono \u0161to \u010Dita\u0161?",chips:["Status narud\u017Ebe","Povrat robe","Reklamacija","Otkazivanje narud\u017Ebe","Preporuke proizvoda"],today:"Danas",timeNow:"upravo sad",timeMin:"prije {n} min",timeHour:"prije {n} h",rateAnswer:"Ocijeni odgovor",fbGood:"Dobar odgovor",fbBad:"Lo\u0161 odgovor",disclaimer:"Jim je AI asistent \xB7 mo\u017Ee pogrije\u0161iti.",privacyLink:"Za\u0161tita osobnih podataka",placeholder:"Napi\u0161i poruku Jimu\u2026",placeholderConsent:"Za nastavak potvrdi privolu \u2191",gdprTitle:"Prije nego po\u010Dnemo",gdprBody:"Jim koristi AI za odgovaranje na tvoja pitanja. Razgovor mo\u017Ee biti pohranjen radi pobolj\u0161anja usluge. Vi\u0161e u {link}.",gdprLink:"pravilima o za\u0161titi podataka",gdprPending:"Tvoje pitanje: {q} \u2014 poslat \u0107u ga \u010Dim da\u0161 privolu.",gdprAccept:"Sla\u017Eem se i po\u010Dni",gdprDecline:"Ne sla\u017Eem se",gdprDeclinedTitle:"Bez privole ne mo\u017Eemo nastaviti",gdprDeclinedBody:"Za razgovor s Jimom potrebno je dati privolu za obradu poruka. Ako si se predomislio, mo\u017Ee\u0161 je dati sada.",gdprReset:"Daj privolu",panelRecommended:"Preporu\u010Deni proizvodi",addToCart:"Dodaj u ko\u0161aricu",priceFrom:"od",loadingPrice:"U\u010Ditavam\u2026",backToProducts:"Natrag na proizvode",inStock:"Na zalihi",pickVariant:"Odaberi {opt}",orderPanelTitle:"Narud\u017Eba",orderItems:"Stavke:",orderTotal:"Ukupno:",addedToCart:"Dodano u ko\u0161aricu",goToCart:"Idi u ko\u0161aricu",addedViaJim:"Dodano putem Jima",discountUpTo:"DO \u2013{n} %"},sl:{intro:"Pozdravljeni, sem **Jim**, va\u0161 AI asistent pri GymBeamu.",welcome:"Kako vam lahko pomagam?",welcomePdp:"Vidim, da si ogledujete {product}. \u017Delite izvedeti ve\u010D o tem izdelku ali i\u0161\u010Dete kaj drugega?",welcomeCategory:"Pomagal vam bom pri izbiri. Kak\u0161en je va\u0161 cilj \u2014 pridobivanje mi\u0161ic, huj\u0161anje ali splo\u0161no zdravje?",welcomeCart:"Vidim, da imate nekaj v ko\u0161arici. \u017Delite pomo\u010D pri izbiri ali dodati kaj, kar vam lahko pomaga?",welcomeAccount:"Kako vam lahko pomagam?",welcomeBlog:"\u017Delite, da vam priporo\u010Dim izdelke, povezane s tem, kar berete?",chips:["Stanje naro\u010Dila","Vra\u010Dilo blaga","Reklamacija","Preklic naro\u010Dila","Priporo\u010Dila izdelkov"],today:"Danes",timeNow:"pravkar",timeMin:"pred {n} min",timeHour:"pred {n} h",rateAnswer:"Oceni odgovor",fbGood:"Dober odgovor",fbBad:"Slab odgovor",disclaimer:"Jim je AI asistent \xB7 lahko se zmoti.",privacyLink:"Pravilnik o zasebnosti",placeholder:"Napi\u0161i sporo\u010Dilo Jimu\u2026",placeholderConsent:"Za nadaljevanje podaj soglasje \u2191",gdprTitle:"Preden za\u010Dnemo",gdprBody:"Jim uporablja umetno inteligenco za odgovarjanje na va\u0161a vpra\u0161anja. Pogovor je lahko shranjen za izbolj\u0161anje storitve. Ve\u010D v {link}.",gdprLink:"pravilniku o zasebnosti",gdprPending:"Va\u0161e vpra\u0161anje: {q} \u2014 poslal ga bom takoj, ko podate soglasje.",gdprAccept:"Strinjam se in za\u010Dni",gdprDecline:"Ne strinjam se",gdprDeclinedTitle:"Brez soglasja ne moremo nadaljevati",gdprDeclinedBody:"Za klepet z Jimom je treba podati soglasje za obdelavo sporo\u010Dil. \u010Ce ste si premislili, ga lahko podate zdaj.",gdprReset:"Podaj soglasje",panelRecommended:"Priporo\u010Deni izdelki",addToCart:"Dodaj v ko\u0161arico",priceFrom:"od",loadingPrice:"Nalagam\u2026",backToProducts:"Nazaj na izdelke",inStock:"Na zalogi",pickVariant:"Izberi {opt}",orderPanelTitle:"Naro\u010Dilo",orderItems:"Izdelki:",orderTotal:"Skupaj:",addedToCart:"Dodano v ko\u0161arico",goToCart:"Pojdi v ko\u0161arico",addedViaJim:"Dodano prek Jima",discountUpTo:"DO \u2013{n} %"},it:{intro:"Ciao, sono **Jim**, il tuo assistente AI di GymBeam.",welcome:"Come posso aiutarti?",welcomePdp:"Vedo che stai guardando {product}. Vuoi saperne di pi\xF9 su questo prodotto o cerchi qualcos'altro?",welcomeCategory:"Ti aiuto a scegliere. Qual \xE8 il tuo obiettivo \u2014 aumentare la massa muscolare, dimagrire o la salute generale?",welcomeCart:"Vedo che hai qualcosa nel carrello. Vuoi aiuto nella scelta o aggiungere qualcosa che pu\xF2 esserti utile?",welcomeAccount:"Come posso aiutarti?",welcomeBlog:"Vuoi che ti consigli prodotti legati a ci\xF2 che stai leggendo?",chips:["Stato dell'ordine","Reso merce","Reclamo","Annullamento ordine","Consigli prodotti"],today:"Oggi",timeNow:"proprio ora",timeMin:"{n} min fa",timeHour:"{n} h fa",rateAnswer:"Valuta la risposta",fbGood:"Buona risposta",fbBad:"Risposta scadente",disclaimer:"Jim \xE8 un assistente AI \xB7 pu\xF2 sbagliare.",privacyLink:"Informativa sulla privacy",placeholder:"Scrivi un messaggio a Jim\u2026",placeholderConsent:"Concedi il consenso sopra per continuare \u2191",gdprTitle:"Prima di iniziare",gdprBody:"Jim usa l'AI per rispondere alle tue domande. La conversazione pu\xF2 essere salvata per migliorare il servizio. Maggiori informazioni nell'{link}.",gdprLink:"informativa sulla privacy",gdprPending:"La tua domanda: {q} \u2014 la invier\xF2 non appena darai il consenso.",gdprAccept:"Accetto e inizia",gdprDecline:"Non accetto",gdprDeclinedTitle:"Senza consenso non possiamo continuare",gdprDeclinedBody:"Per chattare con Jim devi acconsentire al trattamento dei messaggi. Se hai cambiato idea, puoi darlo ora.",gdprReset:"Dai il consenso",panelRecommended:"Prodotti consigliati",addToCart:"Aggiungi al carrello",priceFrom:"da",loadingPrice:"Caricamento\u2026",backToProducts:"Torna ai prodotti",inStock:"Disponibile",pickVariant:"Seleziona {opt}",orderPanelTitle:"Ordine",orderItems:"Articoli:",orderTotal:"Totale:",addedToCart:"Aggiunto al carrello",goToCart:"Vai al carrello",addedViaJim:"Aggiunto tramite Jim",discountUpTo:"FINO A \u2013{n} %"},uk:{intro:"\u041F\u0440\u0438\u0432\u0456\u0442, \u044F **Jim**, \u0442\u0432\u0456\u0439 AI-\u0430\u0441\u0438\u0441\u0442\u0435\u043D\u0442 \u0443 GymBeam.",welcome:"\u0427\u0438\u043C \u043C\u043E\u0436\u0443 \u0434\u043E\u043F\u043E\u043C\u043E\u0433\u0442\u0438?",welcomePdp:"\u0411\u0430\u0447\u0443, \u0449\u043E \u0442\u0438 \u043F\u0435\u0440\u0435\u0433\u043B\u044F\u0434\u0430\u0454\u0448 {product}. \u0425\u043E\u0447\u0435\u0448 \u0434\u0456\u0437\u043D\u0430\u0442\u0438\u0441\u044F \u0431\u0456\u043B\u044C\u0448\u0435 \u043F\u0440\u043E \u0446\u0435\u0439 \u0442\u043E\u0432\u0430\u0440 \u0447\u0438 \u0448\u0443\u043A\u0430\u0454\u0448 \u0449\u043E\u0441\u044C \u0456\u043D\u0448\u0435?",welcomeCategory:"\u0414\u043E\u043F\u043E\u043C\u043E\u0436\u0443 \u0442\u043E\u0431\u0456 \u0437 \u0432\u0438\u0431\u043E\u0440\u043E\u043C. \u042F\u043A\u0430 \u0442\u0432\u043E\u044F \u043C\u0435\u0442\u0430 \u2014 \u043D\u0430\u0431\u0456\u0440 \u043C'\u044F\u0437\u0456\u0432, \u0441\u0445\u0443\u0434\u043D\u0435\u043D\u043D\u044F \u0447\u0438 \u0437\u0430\u0433\u0430\u043B\u044C\u043D\u0435 \u0437\u0434\u043E\u0440\u043E\u0432'\u044F?",welcomeCart:"\u0411\u0430\u0447\u0443, \u0449\u043E \u0432 \u0442\u0435\u0431\u0435 \u0449\u043E\u0441\u044C \u0443 \u043A\u043E\u0448\u0438\u043A\u0443. \u0414\u043E\u043F\u043E\u043C\u043E\u0433\u0442\u0438 \u0437 \u0432\u0438\u0431\u043E\u0440\u043E\u043C \u0447\u0438 \u0434\u043E\u0434\u0430\u0442\u0438 \u0449\u043E\u0441\u044C \u043A\u043E\u0440\u0438\u0441\u043D\u0435?",welcomeAccount:"\u0427\u0438\u043C \u043C\u043E\u0436\u0443 \u0434\u043E\u043F\u043E\u043C\u043E\u0433\u0442\u0438?",welcomeBlog:"\u0425\u043E\u0447\u0435\u0448, \u0449\u043E\u0431 \u044F \u043F\u043E\u0440\u0435\u043A\u043E\u043C\u0435\u043D\u0434\u0443\u0432\u0430\u0432 \u0442\u043E\u0432\u0430\u0440\u0438, \u043F\u043E\u0432'\u044F\u0437\u0430\u043D\u0456 \u0437 \u0442\u0438\u043C, \u0449\u043E \u0442\u0438 \u0447\u0438\u0442\u0430\u0454\u0448?",chips:["\u0421\u0442\u0430\u0442\u0443\u0441 \u0437\u0430\u043C\u043E\u0432\u043B\u0435\u043D\u043D\u044F","\u041F\u043E\u0432\u0435\u0440\u043D\u0435\u043D\u043D\u044F \u0442\u043E\u0432\u0430\u0440\u0443","\u0420\u0435\u043A\u043B\u0430\u043C\u0430\u0446\u0456\u044F","\u0421\u043A\u0430\u0441\u0443\u0432\u0430\u043D\u043D\u044F \u0437\u0430\u043C\u043E\u0432\u043B\u0435\u043D\u043D\u044F","\u0420\u0435\u043A\u043E\u043C\u0435\u043D\u0434\u0430\u0446\u0456\u0457 \u0442\u043E\u0432\u0430\u0440\u0456\u0432"],today:"\u0421\u044C\u043E\u0433\u043E\u0434\u043D\u0456",timeNow:"\u0449\u043E\u0439\u043D\u043E",timeMin:"{n} \u0445\u0432 \u0442\u043E\u043C\u0443",timeHour:"{n} \u0433\u043E\u0434 \u0442\u043E\u043C\u0443",rateAnswer:"\u041E\u0446\u0456\u043D\u0438 \u0432\u0456\u0434\u043F\u043E\u0432\u0456\u0434\u044C",fbGood:"\u0413\u0430\u0440\u043D\u0430 \u0432\u0456\u0434\u043F\u043E\u0432\u0456\u0434\u044C",fbBad:"\u041F\u043E\u0433\u0430\u043D\u0430 \u0432\u0456\u0434\u043F\u043E\u0432\u0456\u0434\u044C",disclaimer:"Jim \u2014 \u0446\u0435 AI-\u0430\u0441\u0438\u0441\u0442\u0435\u043D\u0442 \xB7 \u043C\u043E\u0436\u0435 \u043F\u043E\u043C\u0438\u043B\u044F\u0442\u0438\u0441\u044F.",privacyLink:"\u041F\u043E\u043B\u0456\u0442\u0438\u043A\u0430 \u043A\u043E\u043D\u0444\u0456\u0434\u0435\u043D\u0446\u0456\u0439\u043D\u043E\u0441\u0442\u0456",placeholder:"\u041D\u0430\u043F\u0438\u0448\u0438 \u043F\u043E\u0432\u0456\u0434\u043E\u043C\u043B\u0435\u043D\u043D\u044F Jim\u2026",placeholderConsent:"\u041D\u0430\u0434\u0430\u0439 \u0437\u0433\u043E\u0434\u0443 \u0432\u0438\u0449\u0435, \u0449\u043E\u0431 \u043F\u0440\u043E\u0434\u043E\u0432\u0436\u0438\u0442\u0438 \u2191",gdprTitle:"\u041F\u0435\u0440\u0448 \u043D\u0456\u0436 \u043F\u043E\u0447\u0430\u0442\u0438",gdprBody:"Jim \u0432\u0438\u043A\u043E\u0440\u0438\u0441\u0442\u043E\u0432\u0443\u0454 AI \u0434\u043B\u044F \u0432\u0456\u0434\u043F\u043E\u0432\u0456\u0434\u0435\u0439 \u043D\u0430 \u0442\u0432\u043E\u0457 \u0437\u0430\u043F\u0438\u0442\u0430\u043D\u043D\u044F. \u0420\u043E\u0437\u043C\u043E\u0432\u0443 \u043C\u043E\u0436\u0435 \u0431\u0443\u0442\u0438 \u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043D\u043E \u0434\u043B\u044F \u043F\u043E\u043A\u0440\u0430\u0449\u0435\u043D\u043D\u044F \u0441\u0435\u0440\u0432\u0456\u0441\u0443. \u0414\u043E\u043A\u043B\u0430\u0434\u043D\u0456\u0448\u0435 \u0432 {link}.",gdprLink:"\u043F\u043E\u043B\u0456\u0442\u0438\u0446\u0456 \u043A\u043E\u043D\u0444\u0456\u0434\u0435\u043D\u0446\u0456\u0439\u043D\u043E\u0441\u0442\u0456",gdprPending:"\u0422\u0432\u043E\u0454 \u0437\u0430\u043F\u0438\u0442\u0430\u043D\u043D\u044F: {q} \u2014 \u043D\u0430\u0434\u0456\u0448\u043B\u044E \u0439\u043E\u0433\u043E \u043E\u0434\u0440\u0430\u0437\u0443 \u043F\u0456\u0441\u043B\u044F \u043D\u0430\u0434\u0430\u043D\u043D\u044F \u0437\u0433\u043E\u0434\u0438.",gdprAccept:"\u041F\u043E\u0433\u043E\u0434\u0436\u0443\u044E\u0441\u044C \u0456 \u043F\u043E\u0447\u0430\u0442\u0438",gdprDecline:"\u041D\u0435 \u043F\u043E\u0433\u043E\u0434\u0436\u0443\u044E\u0441\u044C",gdprDeclinedTitle:"\u0411\u0435\u0437 \u0437\u0433\u043E\u0434\u0438 \u043C\u0438 \u043D\u0435 \u043C\u043E\u0436\u0435\u043C\u043E \u043F\u0440\u043E\u0434\u043E\u0432\u0436\u0438\u0442\u0438",gdprDeclinedBody:"\u0429\u043E\u0431 \u0441\u043F\u0456\u043B\u043A\u0443\u0432\u0430\u0442\u0438\u0441\u044F \u0437 Jim, \u043F\u043E\u0442\u0440\u0456\u0431\u043D\u043E \u043D\u0430\u0434\u0430\u0442\u0438 \u0437\u0433\u043E\u0434\u0443 \u043D\u0430 \u043E\u0431\u0440\u043E\u0431\u043A\u0443 \u043F\u043E\u0432\u0456\u0434\u043E\u043C\u043B\u0435\u043D\u044C. \u042F\u043A\u0449\u043E \u0442\u0438 \u043F\u0435\u0440\u0435\u0434\u0443\u043C\u0430\u0432, \u043C\u043E\u0436\u0435\u0448 \u043D\u0430\u0434\u0430\u0442\u0438 \u0457\u0457 \u0437\u0430\u0440\u0430\u0437.",gdprReset:"\u041D\u0430\u0434\u0430\u0442\u0438 \u0437\u0433\u043E\u0434\u0443",panelRecommended:"\u0420\u0435\u043A\u043E\u043C\u0435\u043D\u0434\u043E\u0432\u0430\u043D\u0456 \u0442\u043E\u0432\u0430\u0440\u0438",addToCart:"\u0414\u043E\u0434\u0430\u0442\u0438 \u0432 \u043A\u043E\u0448\u0438\u043A",priceFrom:"\u0432\u0456\u0434",loadingPrice:"\u0417\u0430\u0432\u0430\u043D\u0442\u0430\u0436\u0435\u043D\u043D\u044F\u2026",backToProducts:"\u041D\u0430\u0437\u0430\u0434 \u0434\u043E \u0442\u043E\u0432\u0430\u0440\u0456\u0432",inStock:"\u0412 \u043D\u0430\u044F\u0432\u043D\u043E\u0441\u0442\u0456",pickVariant:"\u0412\u0438\u0431\u0435\u0440\u0456\u0442\u044C {opt}",orderPanelTitle:"\u0417\u0430\u043C\u043E\u0432\u043B\u0435\u043D\u043D\u044F",orderItems:"\u0422\u043E\u0432\u0430\u0440\u0438:",orderTotal:"\u0420\u0430\u0437\u043E\u043C:",addedToCart:"\u0414\u043E\u0434\u0430\u043D\u043E \u0432 \u043A\u043E\u0448\u0438\u043A",goToCart:"\u0414\u043E \u043A\u043E\u0448\u0438\u043A\u0430",addedViaJim:"\u0414\u043E\u0434\u0430\u043D\u043E \u0447\u0435\u0440\u0435\u0437 Jim",discountUpTo:"\u0414\u041E \u2013{n} %"},nl:{intro:"Hoi, ik ben **Jim**, jouw AI-assistent van GymBeam.",welcome:"Hoe kan ik je helpen?",welcomePdp:"Ik zie dat je naar {product} kijkt. Wil je meer over dit product weten of zoek je iets anders?",welcomeCategory:"Ik help je kiezen. Wat is je doel \u2014 spieropbouw, afvallen of algehele gezondheid?",welcomeCart:"Ik zie dat je iets in je winkelwagen hebt. Wil je hulp bij het kiezen of iets toevoegen wat je kan helpen?",welcomeAccount:"Hoe kan ik je helpen?",welcomeBlog:"Zal ik producten aanbevelen die passen bij wat je leest?",chips:["Bestelstatus","Bestelling annuleren","Productaanbevelingen"],today:"Vandaag",timeNow:"zojuist",timeMin:"{n} min geleden",timeHour:"{n} u geleden",rateAnswer:"Beoordeel het antwoord",fbGood:"Goed antwoord",fbBad:"Slecht antwoord",disclaimer:"Jim is een AI-assistent \xB7 kan fouten maken.",privacyLink:"Privacybeleid",placeholder:"Schrijf Jim een bericht\u2026",placeholderConsent:"Geef hierboven toestemming om door te gaan \u2191",gdprTitle:"Voordat we beginnen",gdprBody:"Jim gebruikt AI om je vragen te beantwoorden. Het gesprek kan worden opgeslagen om de service te verbeteren. Meer in ons {link}.",gdprLink:"privacybeleid",gdprPending:"Je vraag: {q} \u2014 ik stuur hem zodra je toestemming geeft.",gdprAccept:"Akkoord en starten",gdprDecline:"Niet akkoord",gdprDeclinedTitle:"Zonder toestemming kunnen we niet doorgaan",gdprDeclinedBody:"Om met Jim te chatten moet je toestemming geven voor de verwerking van berichten. Als je van gedachten bent veranderd, kun je die nu geven.",gdprReset:"Toestemming geven",panelRecommended:"Aanbevolen producten",addToCart:"In winkelwagen",priceFrom:"vanaf",loadingPrice:"Laden\u2026",backToProducts:"Terug naar producten",inStock:"Op voorraad",pickVariant:"Kies {opt}",orderPanelTitle:"Bestelling",orderItems:"Artikelen:",orderTotal:"Totaal:",addedToCart:"Toegevoegd aan winkelwagen",goToCart:"Naar winkelwagen",addedViaJim:"Toegevoegd via Jim",discountUpTo:"TOT \u2013{n} %"},fr:{intro:"Salut, je suis **Jim**, ton assistant IA chez GymBeam.",welcome:"Comment puis-je t'aider ?",welcomePdp:"Je vois que tu regardes {product}. Tu veux en savoir plus sur ce produit ou tu cherches autre chose ?",welcomeCategory:"Je t'aide \xE0 choisir. Quel est ton objectif \u2014 prise de muscle, perte de poids ou sant\xE9 g\xE9n\xE9rale ?",welcomeCart:"Je vois que tu as quelque chose dans ton panier. Tu veux de l'aide pour choisir ou ajouter quelque chose d'utile ?",welcomeAccount:"Comment puis-je t'aider ?",welcomeBlog:"Tu veux que je te recommande des produits li\xE9s \xE0 ce que tu lis ?",chips:["Statut de la commande","Annulation de commande","Recommandations produits"],today:"Aujourd'hui",timeNow:"\xE0 l'instant",timeMin:"il y a {n} min",timeHour:"il y a {n} h",rateAnswer:"\xC9value la r\xE9ponse",fbGood:"Bonne r\xE9ponse",fbBad:"Mauvaise r\xE9ponse",disclaimer:"Jim est un assistant IA \xB7 il peut se tromper.",privacyLink:"Politique de confidentialit\xE9",placeholder:"\xC9cris un message \xE0 Jim\u2026",placeholderConsent:"Donne ton consentement ci-dessus pour continuer \u2191",gdprTitle:"Avant de commencer",gdprBody:"Jim utilise l'IA pour r\xE9pondre \xE0 tes questions. La conversation peut \xEAtre enregistr\xE9e pour am\xE9liorer le service. Plus d'infos dans notre {link}.",gdprLink:"politique de confidentialit\xE9",gdprPending:"Ta question : {q} \u2014 je l'envoie d\xE8s que tu donnes ton consentement.",gdprAccept:"Accepter et commencer",gdprDecline:"Refuser",gdprDeclinedTitle:"Sans consentement, nous ne pouvons pas continuer",gdprDeclinedBody:"Pour discuter avec Jim, tu dois consentir au traitement des messages. Si tu as chang\xE9 d'avis, tu peux le donner maintenant.",gdprReset:"Donner mon consentement",panelRecommended:"Produits recommand\xE9s",addToCart:"Ajouter au panier",priceFrom:"d\xE8s",loadingPrice:"Chargement\u2026",backToProducts:"Retour aux produits",inStock:"En stock",pickVariant:"Choisir {opt}",orderPanelTitle:"Commande",orderItems:"Articles :",orderTotal:"Total :",addedToCart:"Ajout\xE9 au panier",goToCart:"Voir le panier",addedViaJim:"Ajout\xE9 via Jim",discountUpTo:"JUSQU'\xC0 \u2013{n} %"},bs:{intro:"Zdravo, ja sam **Jim**, tvoj AI asistent u GymBeamu.",welcome:"Kako ti mogu pomo\u0107i?",welcomePdp:"Vidim da gleda\u0161 {product}. \u017Deli\u0161 li saznati vi\u0161e o ovom proizvodu ili tra\u017Ei\u0161 ne\u0161to drugo?",welcomeCategory:"Pomo\u0107i \u0107u ti pri odabiru. Koji je tvoj cilj \u2014 izgradnja mi\u0161i\u0107a, mr\u0161avljenje ili op\u0107e zdravlje?",welcomeCart:"Vidim da ima\u0161 ne\u0161to u korpi. \u017Deli\u0161 li pomo\u0107 pri odabiru ili dodati ne\u0161to \u0161to ti mo\u017Ee pomo\u0107i?",welcomeAccount:"Kako ti mogu pomo\u0107i?",welcomeBlog:"\u017Deli\u0161 li da ti preporu\u010Dim proizvode vezane za ono \u0161to \u010Dita\u0161?",chips:["Status narud\u017Ebe","Povrat robe","Reklamacija","Otkazivanje narud\u017Ebe","Preporuke proizvoda"],today:"Danas",timeNow:"upravo sad",timeMin:"prije {n} min",timeHour:"prije {n} h",rateAnswer:"Ocijeni odgovor",fbGood:"Dobar odgovor",fbBad:"Lo\u0161 odgovor",disclaimer:"Jim je AI asistent \xB7 mo\u017Ee pogrije\u0161iti.",privacyLink:"Za\u0161tita li\u010Dnih podataka",placeholder:"Napi\u0161i poruku Jimu\u2026",placeholderConsent:"Za nastavak potvrdi saglasnost \u2191",gdprTitle:"Prije nego po\u010Dnemo",gdprBody:"Jim koristi AI za odgovaranje na tvoja pitanja. Razgovor mo\u017Ee biti sa\u010Duvan radi pobolj\u0161anja usluge. Vi\u0161e u {link}.",gdprLink:"pravilima o za\u0161titi podataka",gdprPending:"Tvoje pitanje: {q} \u2014 poslat \u0107u ga \u010Dim da\u0161 saglasnost.",gdprAccept:"Sla\u017Eem se i po\u010Dni",gdprDecline:"Ne sla\u017Eem se",gdprDeclinedTitle:"Bez saglasnosti ne mo\u017Eemo nastaviti",gdprDeclinedBody:"Za razgovor s Jimom potrebno je dati saglasnost za obradu poruka. Ako si se predomislio, mo\u017Ee\u0161 je dati sada.",gdprReset:"Daj saglasnost",panelRecommended:"Preporu\u010Deni proizvodi",addToCart:"Dodaj u korpu",priceFrom:"od",loadingPrice:"U\u010Ditavam\u2026",backToProducts:"Nazad na proizvode",inStock:"Na stanju",pickVariant:"Odaberi {opt}",orderPanelTitle:"Narud\u017Eba",orderItems:"Stavke:",orderTotal:"Ukupno:",addedToCart:"Dodano u korpu",goToCart:"Idi u korpu",addedViaJim:"Dodano putem Jima",discountUpTo:"DO \u2013{n} %"},el:{intro:"\u0393\u03B5\u03B9\u03B1, \u03B5\u03AF\u03BC\u03B1\u03B9 \u03BF **Jim**, \u03BF AI \u03B2\u03BF\u03B7\u03B8\u03CC\u03C2 \u03C3\u03BF\u03C5 \u03C3\u03C4\u03B7 GymBeam.",welcome:"\u03A0\u03CE\u03C2 \u03BC\u03C0\u03BF\u03C1\u03CE \u03BD\u03B1 \u03C3\u03B5 \u03B2\u03BF\u03B7\u03B8\u03AE\u03C3\u03C9;",welcomePdp:"\u0392\u03BB\u03AD\u03C0\u03C9 \u03CC\u03C4\u03B9 \u03BA\u03BF\u03B9\u03C4\u03AC\u03C2 \u03C4\u03BF {product}. \u0398\u03AD\u03BB\u03B5\u03B9\u03C2 \u03BD\u03B1 \u03BC\u03AC\u03B8\u03B5\u03B9\u03C2 \u03C0\u03B5\u03C1\u03B9\u03C3\u03C3\u03CC\u03C4\u03B5\u03C1\u03B1 \u03B3\u03B9' \u03B1\u03C5\u03C4\u03CC \u03C4\u03BF \u03C0\u03C1\u03BF\u03CA\u03CC\u03BD \u03AE \u03C8\u03AC\u03C7\u03BD\u03B5\u03B9\u03C2 \u03BA\u03AC\u03C4\u03B9 \u03AC\u03BB\u03BB\u03BF;",welcomeCategory:"\u0398\u03B1 \u03C3\u03B5 \u03B2\u03BF\u03B7\u03B8\u03AE\u03C3\u03C9 \u03BD\u03B1 \u03B4\u03B9\u03B1\u03BB\u03AD\u03BE\u03B5\u03B9\u03C2. \u03A0\u03BF\u03B9\u03BF\u03C2 \u03B5\u03AF\u03BD\u03B1\u03B9 \u03BF \u03C3\u03C4\u03CC\u03C7\u03BF\u03C2 \u03C3\u03BF\u03C5 \u2014 \u03B1\u03CD\u03BE\u03B7\u03C3\u03B7 \u03BC\u03C5\u03CA\u03BA\u03AE\u03C2 \u03BC\u03AC\u03B6\u03B1\u03C2, \u03B1\u03C0\u03CE\u03BB\u03B5\u03B9\u03B1 \u03B2\u03AC\u03C1\u03BF\u03C5\u03C2 \u03AE \u03B3\u03B5\u03BD\u03B9\u03BA\u03AE \u03C5\u03B3\u03B5\u03AF\u03B1;",welcomeCart:"\u0392\u03BB\u03AD\u03C0\u03C9 \u03CC\u03C4\u03B9 \u03AD\u03C7\u03B5\u03B9\u03C2 \u03BA\u03AC\u03C4\u03B9 \u03C3\u03C4\u03BF \u03BA\u03B1\u03BB\u03AC\u03B8\u03B9. \u0398\u03AD\u03BB\u03B5\u03B9\u03C2 \u03B2\u03BF\u03AE\u03B8\u03B5\u03B9\u03B1 \u03BC\u03B5 \u03C4\u03B7\u03BD \u03B5\u03C0\u03B9\u03BB\u03BF\u03B3\u03AE \u03AE \u03BD\u03B1 \u03C0\u03C1\u03BF\u03C3\u03B8\u03AD\u03C3\u03B5\u03B9\u03C2 \u03BA\u03AC\u03C4\u03B9 \u03C0\u03BF\u03C5 \u03BC\u03C0\u03BF\u03C1\u03B5\u03AF \u03BD\u03B1 \u03C3\u03B5 \u03B2\u03BF\u03B7\u03B8\u03AE\u03C3\u03B5\u03B9;",welcomeAccount:"\u03A0\u03CE\u03C2 \u03BC\u03C0\u03BF\u03C1\u03CE \u03BD\u03B1 \u03C3\u03B5 \u03B2\u03BF\u03B7\u03B8\u03AE\u03C3\u03C9;",welcomeBlog:"\u0398\u03AD\u03BB\u03B5\u03B9\u03C2 \u03BD\u03B1 \u03C3\u03BF\u03C5 \u03C0\u03C1\u03BF\u03C4\u03B5\u03AF\u03BD\u03C9 \u03C0\u03C1\u03BF\u03CA\u03CC\u03BD\u03C4\u03B1 \u03C3\u03C7\u03B5\u03C4\u03B9\u03BA\u03AC \u03BC\u03B5 \u03B1\u03C5\u03C4\u03CC \u03C0\u03BF\u03C5 \u03B4\u03B9\u03B1\u03B2\u03AC\u03B6\u03B5\u03B9\u03C2;",chips:["\u039A\u03B1\u03C4\u03AC\u03C3\u03C4\u03B1\u03C3\u03B7 \u03C0\u03B1\u03C1\u03B1\u03B3\u03B3\u03B5\u03BB\u03AF\u03B1\u03C2","\u0395\u03C0\u03B9\u03C3\u03C4\u03C1\u03BF\u03C6\u03AE \u03C0\u03C1\u03BF\u03CA\u03CC\u03BD\u03C4\u03BF\u03C2","\u0394\u03AE\u03BB\u03C9\u03C3\u03B7 \u03B5\u03BB\u03B1\u03C4\u03C4\u03CE\u03BC\u03B1\u03C4\u03BF\u03C2","\u0391\u03BA\u03CD\u03C1\u03C9\u03C3\u03B7 \u03C0\u03B1\u03C1\u03B1\u03B3\u03B3\u03B5\u03BB\u03AF\u03B1\u03C2","\u03A0\u03C1\u03BF\u03C4\u03AC\u03C3\u03B5\u03B9\u03C2 \u03C0\u03C1\u03BF\u03CA\u03CC\u03BD\u03C4\u03C9\u03BD"],today:"\u03A3\u03AE\u03BC\u03B5\u03C1\u03B1",timeNow:"\u03BC\u03CC\u03BB\u03B9\u03C2 \u03C4\u03CE\u03C1\u03B1",timeMin:"\u03C0\u03C1\u03B9\u03BD {n} \u03BB\u03B5\u03C0\u03C4\u03AC",timeHour:"\u03C0\u03C1\u03B9\u03BD {n} \u03CE\u03C1\u03B5\u03C2",rateAnswer:"\u0391\u03BE\u03B9\u03BF\u03BB\u03CC\u03B3\u03B7\u03C3\u03B5 \u03C4\u03B7\u03BD \u03B1\u03C0\u03AC\u03BD\u03C4\u03B7\u03C3\u03B7",fbGood:"\u039A\u03B1\u03BB\u03AE \u03B1\u03C0\u03AC\u03BD\u03C4\u03B7\u03C3\u03B7",fbBad:"\u039A\u03B1\u03BA\u03AE \u03B1\u03C0\u03AC\u03BD\u03C4\u03B7\u03C3\u03B7",disclaimer:"\u039F Jim \u03B5\u03AF\u03BD\u03B1\u03B9 \u03B2\u03BF\u03B7\u03B8\u03CC\u03C2 AI \xB7 \u03BC\u03C0\u03BF\u03C1\u03B5\u03AF \u03BD\u03B1 \u03BA\u03AC\u03BD\u03B5\u03B9 \u03BB\u03AC\u03B8\u03B7.",privacyLink:"\u03A0\u03BF\u03BB\u03B9\u03C4\u03B9\u03BA\u03AE \u03B1\u03C0\u03BF\u03C1\u03C1\u03AE\u03C4\u03BF\u03C5",placeholder:"\u0393\u03C1\u03AC\u03C8\u03B5 \u03BC\u03AE\u03BD\u03C5\u03BC\u03B1 \u03C3\u03C4\u03BF\u03BD Jim\u2026",placeholderConsent:"\u0394\u03CE\u03C3\u03B5 \u03C3\u03C5\u03B3\u03BA\u03B1\u03C4\u03AC\u03B8\u03B5\u03C3\u03B7 \u03C0\u03B1\u03C1\u03B1\u03C0\u03AC\u03BD\u03C9 \u03B3\u03B9\u03B1 \u03BD\u03B1 \u03C3\u03C5\u03BD\u03B5\u03C7\u03AF\u03C3\u03B5\u03B9\u03C2 \u2191",gdprTitle:"\u03A0\u03C1\u03B9\u03BD \u03BE\u03B5\u03BA\u03B9\u03BD\u03AE\u03C3\u03BF\u03C5\u03BC\u03B5",gdprBody:"\u039F Jim \u03C7\u03C1\u03B7\u03C3\u03B9\u03BC\u03BF\u03C0\u03BF\u03B9\u03B5\u03AF AI \u03B3\u03B9\u03B1 \u03BD\u03B1 \u03B1\u03C0\u03B1\u03BD\u03C4\u03AC \u03C3\u03C4\u03B9\u03C2 \u03B5\u03C1\u03C9\u03C4\u03AE\u03C3\u03B5\u03B9\u03C2 \u03C3\u03BF\u03C5. \u0397 \u03C3\u03C5\u03BD\u03BF\u03BC\u03B9\u03BB\u03AF\u03B1 \u03BC\u03C0\u03BF\u03C1\u03B5\u03AF \u03BD\u03B1 \u03B1\u03C0\u03BF\u03B8\u03B7\u03BA\u03B5\u03C5\u03C4\u03B5\u03AF \u03B3\u03B9\u03B1 \u03C4\u03B7 \u03B2\u03B5\u03BB\u03C4\u03AF\u03C9\u03C3\u03B7 \u03C4\u03B7\u03C2 \u03C5\u03C0\u03B7\u03C1\u03B5\u03C3\u03AF\u03B1\u03C2. \u03A0\u03B5\u03C1\u03B9\u03C3\u03C3\u03CC\u03C4\u03B5\u03C1\u03B1 \u03C3\u03C4\u03B7\u03BD {link}.",gdprLink:"\u03C0\u03BF\u03BB\u03B9\u03C4\u03B9\u03BA\u03AE \u03B1\u03C0\u03BF\u03C1\u03C1\u03AE\u03C4\u03BF\u03C5",gdprPending:"\u0397 \u03B5\u03C1\u03CE\u03C4\u03B7\u03C3\u03AE \u03C3\u03BF\u03C5: {q} \u2014 \u03B8\u03B1 \u03C4\u03B7\u03BD \u03C3\u03C4\u03B5\u03AF\u03BB\u03C9 \u03BC\u03CC\u03BB\u03B9\u03C2 \u03B4\u03CE\u03C3\u03B5\u03B9\u03C2 \u03C4\u03B7 \u03C3\u03C5\u03B3\u03BA\u03B1\u03C4\u03AC\u03B8\u03B5\u03C3\u03AE \u03C3\u03BF\u03C5.",gdprAccept:"\u03A3\u03C5\u03BC\u03C6\u03C9\u03BD\u03CE \u03BA\u03B1\u03B9 \u03BE\u03B5\u03BA\u03AF\u03BD\u03B1",gdprDecline:"\u0394\u03B9\u03B1\u03C6\u03C9\u03BD\u03CE",gdprDeclinedTitle:"\u03A7\u03C9\u03C1\u03AF\u03C2 \u03C3\u03C5\u03B3\u03BA\u03B1\u03C4\u03AC\u03B8\u03B5\u03C3\u03B7 \u03B4\u03B5\u03BD \u03BC\u03C0\u03BF\u03C1\u03BF\u03CD\u03BC\u03B5 \u03BD\u03B1 \u03C3\u03C5\u03BD\u03B5\u03C7\u03AF\u03C3\u03BF\u03C5\u03BC\u03B5",gdprDeclinedBody:"\u0393\u03B9\u03B1 \u03BD\u03B1 \u03C3\u03C5\u03BD\u03BF\u03BC\u03B9\u03BB\u03AE\u03C3\u03B5\u03B9\u03C2 \u03BC\u03B5 \u03C4\u03BF\u03BD Jim, \u03C0\u03C1\u03AD\u03C0\u03B5\u03B9 \u03BD\u03B1 \u03C3\u03C5\u03BD\u03B1\u03B9\u03BD\u03AD\u03C3\u03B5\u03B9\u03C2 \u03C3\u03C4\u03B7\u03BD \u03B5\u03C0\u03B5\u03BE\u03B5\u03C1\u03B3\u03B1\u03C3\u03AF\u03B1 \u03C4\u03C9\u03BD \u03BC\u03B7\u03BD\u03C5\u03BC\u03AC\u03C4\u03C9\u03BD. \u0391\u03BD \u03AC\u03BB\u03BB\u03B1\u03BE\u03B5\u03C2 \u03B3\u03BD\u03CE\u03BC\u03B7, \u03BC\u03C0\u03BF\u03C1\u03B5\u03AF\u03C2 \u03BD\u03B1 \u03C4\u03B7 \u03B4\u03CE\u03C3\u03B5\u03B9\u03C2 \u03C4\u03CE\u03C1\u03B1.",gdprReset:"\u0394\u03CE\u03C3\u03B5 \u03C3\u03C5\u03B3\u03BA\u03B1\u03C4\u03AC\u03B8\u03B5\u03C3\u03B7",panelRecommended:"\u03A0\u03C1\u03BF\u03C4\u03B5\u03B9\u03BD\u03CC\u03BC\u03B5\u03BD\u03B1 \u03C0\u03C1\u03BF\u03CA\u03CC\u03BD\u03C4\u03B1",addToCart:"\u03A0\u03C1\u03BF\u03C3\u03B8\u03AE\u03BA\u03B7 \u03C3\u03C4\u03BF \u03BA\u03B1\u03BB\u03AC\u03B8\u03B9",priceFrom:"\u03B1\u03C0\u03CC",loadingPrice:"\u03A6\u03CC\u03C1\u03C4\u03C9\u03C3\u03B7\u2026",backToProducts:"\u03A0\u03AF\u03C3\u03C9 \u03C3\u03C4\u03B1 \u03C0\u03C1\u03BF\u03CA\u03CC\u03BD\u03C4\u03B1",inStock:"\u0394\u03B9\u03B1\u03B8\u03AD\u03C3\u03B9\u03BC\u03BF",pickVariant:"\u0394\u03B9\u03AC\u03BB\u03B5\u03BE\u03B5 {opt}",orderPanelTitle:"\u03A0\u03B1\u03C1\u03B1\u03B3\u03B3\u03B5\u03BB\u03AF\u03B1",orderItems:"\u0395\u03AF\u03B4\u03B7:",orderTotal:"\u03A3\u03CD\u03BD\u03BF\u03BB\u03BF:",addedToCart:"\u03A0\u03C1\u03BF\u03C3\u03C4\u03AD\u03B8\u03B7\u03BA\u03B5 \u03C3\u03C4\u03BF \u03BA\u03B1\u03BB\u03AC\u03B8\u03B9",goToCart:"\u03A3\u03C4\u03BF \u03BA\u03B1\u03BB\u03AC\u03B8\u03B9",addedViaJim:"\u03A0\u03C1\u03BF\u03C3\u03C4\u03AD\u03B8\u03B7\u03BA\u03B5 \u03BC\u03AD\u03C3\u03C9 Jim",discountUpTo:"\u0395\u03A9\u03A3 \u2013{n} %"},sr:{intro:"Zdravo, ja sam **Jim**, tvoj AI asistent u GymBeamu.",welcome:"Kako mogu da ti pomognem?",welcomePdp:"Vidim da gleda\u0161 {product}. \u017Deli\u0161 li da sazna\u0161 vi\u0161e o ovom proizvodu ili tra\u017Ei\u0161 ne\u0161to drugo?",welcomeCategory:"Pomo\u0107i \u0107u ti pri izboru. Koji je tvoj cilj \u2014 izgradnja mi\u0161i\u0107a, mr\u0161avljenje ili op\u0161te zdravlje?",welcomeCart:"Vidim da ima\u0161 ne\u0161to u korpi. \u017Deli\u0161 li pomo\u0107 pri izboru ili da doda\u0161 ne\u0161to \u0161to ti mo\u017Ee pomo\u0107i?",welcomeAccount:"Kako mogu da ti pomognem?",welcomeBlog:"\u017Deli\u0161 li da ti preporu\u010Dim proizvode vezane za ono \u0161to \u010Dita\u0161?",chips:["Status porud\u017Ebine","Povra\u0107aj robe","Reklamacija","Otkazivanje porud\u017Ebine","Preporuke proizvoda"],today:"Danas",timeNow:"upravo sad",timeMin:"pre {n} min",timeHour:"pre {n} h",rateAnswer:"Oceni odgovor",fbGood:"Dobar odgovor",fbBad:"Lo\u0161 odgovor",disclaimer:"Jim je AI asistent \xB7 mo\u017Ee da pogre\u0161i.",privacyLink:"Za\u0161tita li\u010Dnih podataka",placeholder:"Napi\u0161i poruku Jimu\u2026",placeholderConsent:"Za nastavak potvrdi saglasnost \u2191",gdprTitle:"Pre nego \u0161to po\u010Dnemo",gdprBody:"Jim koristi AI za odgovaranje na tvoja pitanja. Razgovor mo\u017Ee biti sa\u010Duvan radi pobolj\u0161anja usluge. Vi\u0161e u {link}.",gdprLink:"pravilima o za\u0161titi podataka",gdprPending:"Tvoje pitanje: {q} \u2014 posla\u0107u ga \u010Dim da\u0161 saglasnost.",gdprAccept:"Sla\u017Eem se i po\u010Dni",gdprDecline:"Ne sla\u017Eem se",gdprDeclinedTitle:"Bez saglasnosti ne mo\u017Eemo da nastavimo",gdprDeclinedBody:"Za razgovor sa Jimom potrebno je dati saglasnost za obradu poruka. Ako si se predomislio, mo\u017Ee\u0161 je dati sada.",gdprReset:"Daj saglasnost",panelRecommended:"Preporu\u010Deni proizvodi",addToCart:"Dodaj u korpu",priceFrom:"od",loadingPrice:"U\u010Ditavam\u2026",backToProducts:"Nazad na proizvode",inStock:"Na stanju",pickVariant:"Izaberi {opt}",orderPanelTitle:"Porud\u017Ebina",orderItems:"Stavke:",orderTotal:"Ukupno:",addedToCart:"Dodato u korpu",goToCart:"Idi u korpu",addedViaJim:"Dodato putem Jima",discountUpTo:"DO \u2013{n} %"}},fe={sk:{csatTitle:"Ako si spokojn\xFD s Jimom?",csatCommentPlaceholder:"Nap\xED\u0161 n\xE1m, \u010Do m\xF4\u017Eeme zlep\u0161i\u0165 (nepovinn\xE9)",csatSubmit:"Odosla\u0165",csatSkip:"Presko\u010Di\u0165",csatThanks:"\u010Eakujeme za hodnotenie! \u{1F64F}",csatThanksLow:"\u010Eakujeme, mrz\xED n\xE1s to. Pozrieme sa na to.",csatFarewellChip:"\u010Eakujem, to je v\u0161etko"},cs:{csatTitle:"Jak jsi spokojen\xFD s Jimem?",csatCommentPlaceholder:"Napi\u0161 n\xE1m, co m\u016F\u017Eeme zlep\u0161it (nepovinn\xE9)",csatSubmit:"Odeslat",csatSkip:"P\u0159esko\u010Dit",csatThanks:"D\u011Bkujeme za hodnocen\xED! \u{1F64F}",csatThanksLow:"D\u011Bkujeme, mrz\xED n\xE1s to. Pod\xEDv\xE1me se na to.",csatFarewellChip:"D\u011Bkuji, to je v\u0161e"},en:{csatTitle:"How happy are you with Jim?",csatCommentPlaceholder:"Tell us what we can improve (optional)",csatSubmit:"Submit",csatSkip:"Skip",csatThanks:"Thanks for your rating! \u{1F64F}",csatThanksLow:"Thank you, we're sorry. We'll look into it.",csatFarewellChip:"Thanks, that's all"},de:{csatTitle:"Wie zufrieden bist du mit Jim?",csatCommentPlaceholder:"Sag uns, was wir verbessern k\xF6nnen (optional)",csatSubmit:"Senden",csatSkip:"\xDCberspringen",csatThanks:"Danke f\xFCr deine Bewertung! \u{1F64F}",csatThanksLow:"Danke, das tut uns leid. Wir k\xFCmmern uns darum.",csatFarewellChip:"Danke, das ist alles"},pl:{csatTitle:"Jak oceniasz Jima?",csatCommentPlaceholder:"Napisz, co mo\u017Cemy poprawi\u0107 (opcjonalnie)",csatSubmit:"Wy\u015Blij",csatSkip:"Pomi\u0144",csatThanks:"Dzi\u0119kujemy za ocen\u0119! \u{1F64F}",csatThanksLow:"Dzi\u0119kujemy, przykro nam. Zajmiemy si\u0119 tym.",csatFarewellChip:"Dzi\u0119kuj\u0119, to wszystko"},hu:{csatTitle:"Mennyire vagy el\xE9gedett Jimmel?",csatCommentPlaceholder:"\xCDrd meg, min jav\xEDthatunk (nem k\xF6telez\u0151)",csatSubmit:"K\xFCld\xE9s",csatSkip:"Kihagy\xE1s",csatThanks:"K\xF6sz\xF6nj\xFCk az \xE9rt\xE9kel\xE9st! \u{1F64F}",csatThanksLow:"K\xF6sz\xF6nj\xFCk, sajn\xE1ljuk. Ut\xE1nan\xE9z\xFCnk.",csatFarewellChip:"K\xF6sz\xF6n\xF6m, ennyi volt"},ro:{csatTitle:"C\xE2t de mul\u021Bumit e\u0219ti de Jim?",csatCommentPlaceholder:"Spune-ne ce putem \xEEmbun\u0103t\u0103\u021Bi (op\u021Bional)",csatSubmit:"Trimite",csatSkip:"Omite",csatThanks:"Mul\u021Bumim pentru evaluare! \u{1F64F}",csatThanksLow:"Mul\u021Bumim, ne pare r\u0103u. Ne vom ocupa de asta.",csatFarewellChip:"Mul\u021Bumesc, asta e tot"},bg:{csatTitle:"\u0414\u043E\u0432\u043E\u043B\u0435\u043D \u043B\u0438 \u0441\u0438 \u043E\u0442 Jim?",csatCommentPlaceholder:"\u041D\u0430\u043F\u0438\u0448\u0438 \u043A\u0430\u043A\u0432\u043E \u043C\u043E\u0436\u0435\u043C \u0434\u0430 \u043F\u043E\u0434\u043E\u0431\u0440\u0438\u043C (\u043F\u043E \u0438\u0437\u0431\u043E\u0440)",csatSubmit:"\u0418\u0437\u043F\u0440\u0430\u0442\u0438",csatSkip:"\u041F\u0440\u043E\u043F\u0443\u0441\u043D\u0438",csatThanks:"\u0411\u043B\u0430\u0433\u043E\u0434\u0430\u0440\u0438\u043C \u0437\u0430 \u043E\u0446\u0435\u043D\u043A\u0430\u0442\u0430! \u{1F64F}",csatThanksLow:"\u0411\u043B\u0430\u0433\u043E\u0434\u0430\u0440\u0438\u043C, \u0441\u044A\u0436\u0430\u043B\u044F\u0432\u0430\u043C\u0435. \u0429\u0435 \u043F\u0440\u043E\u0432\u0435\u0440\u0438\u043C.",csatFarewellChip:"\u0411\u043B\u0430\u0433\u043E\u0434\u0430\u0440\u044F, \u0442\u043E\u0432\u0430 \u0435 \u0432\u0441\u0438\u0447\u043A\u043E"},hr:{csatTitle:"Koliko si zadovoljan Jimom?",csatCommentPlaceholder:"Napi\u0161i nam \u0161to mo\u017Eemo pobolj\u0161ati (nije obavezno)",csatSubmit:"Po\u0161alji",csatSkip:"Presko\u010Di",csatThanks:"Hvala na ocjeni! \u{1F64F}",csatThanksLow:"Hvala, \u017Eao nam je. Pogledat \u0107emo to.",csatFarewellChip:"Hvala, to je sve"},sl:{csatTitle:"Kako si zadovoljen z Jimom?",csatCommentPlaceholder:"Napi\u0161i nam, kaj lahko izbolj\u0161amo (neobvezno)",csatSubmit:"Po\u0161lji",csatSkip:"Presko\u010Di",csatThanks:"Hvala za oceno! \u{1F64F}",csatThanksLow:"Hvala, \u017Eal nam je. Preverili bomo.",csatFarewellChip:"Hvala, to je vse"},it:{csatTitle:"Quanto sei soddisfatto di Jim?",csatCommentPlaceholder:"Dicci cosa possiamo migliorare (facoltativo)",csatSubmit:"Invia",csatSkip:"Salta",csatThanks:"Grazie per la valutazione! \u{1F64F}",csatThanksLow:"Grazie, ci dispiace. Ce ne occuperemo.",csatFarewellChip:"Grazie, \xE8 tutto"},uk:{csatTitle:"\u041D\u0430\u0441\u043A\u0456\u043B\u044C\u043A\u0438 \u0442\u0438 \u0437\u0430\u0434\u043E\u0432\u043E\u043B\u0435\u043D\u0438\u0439 Jim?",csatCommentPlaceholder:"\u041D\u0430\u043F\u0438\u0448\u0438, \u0449\u043E \u043C\u0438 \u043C\u043E\u0436\u0435\u043C\u043E \u043F\u043E\u043A\u0440\u0430\u0449\u0438\u0442\u0438 (\u043D\u0435\u043E\u0431\u043E\u0432'\u044F\u0437\u043A\u043E\u0432\u043E)",csatSubmit:"\u041D\u0430\u0434\u0456\u0441\u043B\u0430\u0442\u0438",csatSkip:"\u041F\u0440\u043E\u043F\u0443\u0441\u0442\u0438\u0442\u0438",csatThanks:"\u0414\u044F\u043A\u0443\u0454\u043C\u043E \u0437\u0430 \u043E\u0446\u0456\u043D\u043A\u0443! \u{1F64F}",csatThanksLow:"\u0414\u044F\u043A\u0443\u0454\u043C\u043E, \u043D\u0430\u043C \u0448\u043A\u043E\u0434\u0430. \u041C\u0438 \u0440\u043E\u0437\u0431\u0435\u0440\u0435\u043C\u043E\u0441\u044F.",csatFarewellChip:"\u0414\u044F\u043A\u0443\u044E, \u0446\u0435 \u0432\u0441\u0435"},nl:{csatTitle:"Hoe tevreden ben je over Jim?",csatCommentPlaceholder:"Vertel ons wat we kunnen verbeteren (optioneel)",csatSubmit:"Versturen",csatSkip:"Overslaan",csatThanks:"Bedankt voor je beoordeling! \u{1F64F}",csatThanksLow:"Bedankt, het spijt ons. We kijken ernaar.",csatFarewellChip:"Bedankt, dat is alles"},fr:{csatTitle:"Es-tu satisfait de Jim ?",csatCommentPlaceholder:"Dis-nous ce que nous pouvons am\xE9liorer (facultatif)",csatSubmit:"Envoyer",csatSkip:"Ignorer",csatThanks:"Merci pour ton \xE9valuation ! \u{1F64F}",csatThanksLow:"Merci, nous sommes d\xE9sol\xE9s. Nous allons regarder \xE7a.",csatFarewellChip:"Merci, c'est tout"},bs:{csatTitle:"Koliko si zadovoljan Jimom?",csatCommentPlaceholder:"Napi\u0161i nam \u0161ta mo\u017Eemo pobolj\u0161ati (nije obavezno)",csatSubmit:"Po\u0161alji",csatSkip:"Presko\u010Di",csatThanks:"Hvala na ocjeni! \u{1F64F}",csatThanksLow:"Hvala, \u017Eao nam je. Pogledat \u0107emo to.",csatFarewellChip:"Hvala, to je sve"},el:{csatTitle:"\u03A0\u03CC\u03C3\u03BF \u03B5\u03C5\u03C7\u03B1\u03C1\u03B9\u03C3\u03C4\u03B7\u03BC\u03AD\u03BD\u03BF\u03C2 \u03B5\u03AF\u03C3\u03B1\u03B9 \u03BC\u03B5 \u03C4\u03BF\u03BD Jim;",csatCommentPlaceholder:"\u03A0\u03B5\u03C2 \u03BC\u03B1\u03C2 \u03C4\u03B9 \u03BC\u03C0\u03BF\u03C1\u03BF\u03CD\u03BC\u03B5 \u03BD\u03B1 \u03B2\u03B5\u03BB\u03C4\u03B9\u03CE\u03C3\u03BF\u03C5\u03BC\u03B5 (\u03C0\u03C1\u03BF\u03B1\u03B9\u03C1\u03B5\u03C4\u03B9\u03BA\u03CC)",csatSubmit:"\u0391\u03C0\u03BF\u03C3\u03C4\u03BF\u03BB\u03AE",csatSkip:"\u03A0\u03B1\u03C1\u03AC\u03BB\u03B5\u03B9\u03C8\u03B7",csatThanks:"\u0395\u03C5\u03C7\u03B1\u03C1\u03B9\u03C3\u03C4\u03BF\u03CD\u03BC\u03B5 \u03B3\u03B9\u03B1 \u03C4\u03B7\u03BD \u03B1\u03BE\u03B9\u03BF\u03BB\u03CC\u03B3\u03B7\u03C3\u03B7! \u{1F64F}",csatThanksLow:"\u0395\u03C5\u03C7\u03B1\u03C1\u03B9\u03C3\u03C4\u03BF\u03CD\u03BC\u03B5, \u03BB\u03C5\u03C0\u03BF\u03CD\u03BC\u03B1\u03C3\u03C4\u03B5. \u0398\u03B1 \u03C4\u03BF \u03B5\u03BE\u03B5\u03C4\u03AC\u03C3\u03BF\u03C5\u03BC\u03B5.",csatFarewellChip:"\u0395\u03C5\u03C7\u03B1\u03C1\u03B9\u03C3\u03C4\u03CE, \u03B1\u03C5\u03C4\u03AC \u03AE\u03C4\u03B1\u03BD \u03CC\u03BB\u03B1"},sr:{csatTitle:"Koliko si zadovoljan Jimom?",csatCommentPlaceholder:"Napi\u0161i nam \u0161ta mo\u017Eemo da pobolj\u0161amo (opciono)",csatSubmit:"Po\u0161alji",csatSkip:"Presko\u010Di",csatThanks:"Hvala na oceni! \u{1F64F}",csatThanksLow:"Hvala, \u017Eao nam je. Pogleda\u0107emo to.",csatFarewellChip:"Hvala, to je sve"}};for(let e in J)Object.assign(J[e],fe.en,fe[e]||{});function je(){let e=be,t=(k.market||"").toLowerCase();if(e.includes(t))return t;if(t==="cs")return"cz";let a=(t.includes(".")?t:typeof window<"u"?window.location.hostname:"").toLowerCase();for(let n of a.split("."))if(e.includes(n))return n;return"com"}function B(){return wt[je()]||"en"}function g(){return J[B()]||J.en}function ye(){return ke[je()]||ke.com}function xt(e){let t=(e||"").toLowerCase();return/objedn[áa]vk|zásilk|balík|tracking|status.*order|order.*status|kedy.*príde|kde.*je.*moj|dodání|doručen|küldemény|rendel|versand|lieferung/i.test(t)?"order":/proteín|protein|whey|kreat[íi]n|creatine|vitamín|vitamin|odporu[čc]|doporu[čc]|recommend|supplement|doplnok|výživ|výživa|gainer|bcaa|aminokysel/i.test(t)?"product":/ako|jak|wie|how|kde|kam|kdy|kedy|where|when|môž|mohu|can i|lze|darf|prečo|proč|why|warum/i.test(t)?"faq":"generic"}function zt(e){let t=B(),a=xt(e),n=E[a]&&E[a][t]||E.generic[t]||E.generic.en;return yt.map((r,o)=>({delay:r,content:n[o]||n[n.length-1]}))}function Ct(){let e=B();return ge[e]||ge.en}function Tt(){let e=B();return he[e]||he.en}async function w(e){if(i.isLoading)return;let t=i.messages.length===1&&i.messages[0].role==="assistant"?i.messages[0].content:null;i.messages.push({role:"user",content:e,ts:Date.now()}),i.isLoading=!0,v();let n=zt(e).map(d=>setTimeout(()=>{i.isLoading&&(i.messages.push({role:"assistant",content:d.content,_waiting:!0}),v())},d.delay)),r=new AbortController,o=setTimeout(()=>r.abort(),jt),s=()=>{n.forEach(d=>clearTimeout(d)),clearTimeout(o)},l=()=>{i.messages=i.messages.filter(d=>!d._waiting)};try{i.appManagedContext||(i.pageContext=te());let d=i.pageContext,c=d?{type:d.type,sku:d.sku||null,productName:d.productName||null,productPrice:d.productPrice||null,productDescription:d.productDescription||null,categoryName:d.categoryName||null,breadcrumbs:d.breadcrumbs||null,url:we(d.url||window.location.href)}:{type:"generic",url:we(window.location.href)},m=await Re(),p=await U(),h={"Content-Type":"application/json"},b={session_id:j,message:e,market:k.market||window.location.hostname,page_context:c,customer_token:K(Z),recaptcha_token:m.token,recaptcha_tries:m.tries,recaptcha_wait_ms:m.waitMs,first_agent_message:t,view_mode:i.viewMode};p&&(p.token&&(h["X-Firebase-AppCheck"]=p.token),b.app_platform=p.platform,b.app_check_error=p.error);let f=await fetch(`${x}/chat`,{method:"POST",headers:h,signal:r.signal,body:JSON.stringify(b)});if(!f.ok){let I=new Error(`HTTP ${f.status}`);throw I.status=f.status,I}let y=await f.json();i.csatEligible=y.csat_eligible===!0,s(),l(),i.messages.push({role:"assistant",content:y.response,suggestions:y.suggestions,message_id:y.message_id,ts:Date.now()})}catch(d){console.error("Jim2 error:",d),s(),l(),d.name==="AbortError"?i.messages.push({role:"assistant",content:Ct()}):d.status===429?i.messages.push({role:"assistant",content:Tt()}):i.messages.push({role:"assistant",content:"Prep\xE1\u010D, nepodarilo sa spoji\u0165 so serverom. Sk\xFAs to znova o chv\xED\u013Eu."})}i.isLoading=!1,v()}function Zt(e,t){let a=(e+" "+t).toLowerCase(),n=t.match(/objednávk[au].*?(\d{8,})/i)||e.match(/(\d{8,})/);if(n&&/stav|status|objedná|odoslan|doruč|shipped|delivered/i.test(a)){i.panelContent={type:"order",data:{order_id:n[1],status:St(t),carrier:At(t),items:Pt(t),total:null,currency:"EUR"}};return}}function St(e){return/doručen/i.test(e)?"Doru\u010Den\xE1":/odoslan|shipped/i.test(e)?"Odoslan\xE1":/spracov|processing/i.test(e)?"Spracov\xE1va sa":/expedí|vybaven/i.test(e)?"Expedovan\xE1":"Spracov\xE1va sa"}function At(e){let t=["Packeta","DHL","SPS","GLS","Slovensk\xE1 po\u0161ta","Z\xE1sielkov\u0148a"];for(let a of t)if(e.includes(a))return a;return null}function Pt(e){let t=[],a=e.match(/(?:obsahuje|objednal|produkty|položky)[^.]*?(?::|\n)(.*?)(?:\.|$)/is);return a&&a[1].split(/[,\n]/).forEach(r=>{let o=r.replace(/^[\s—\-•]+/,"").trim();o.length>2&&t.push(o)}),t.length?t:null}let A="https://"+window.location.hostname+"/graphql",P=(()=>{let e=window.location.hostname.toLowerCase(),t=be;for(let a of e.split("."))if(t.includes(a))return"gymbeam"+a;return"gymbeamcom"})(),L=null;async function Lt(){if(L)return L;try{let t=await(await fetch(A,{method:"POST",credentials:"include",headers:{"Content-Type":"application/json",Store:P},body:JSON.stringify({query:"{ customerCart { id } }"})})).json();t?.data?.customerCart?.id?L=t.data.customerCart.id:L=(await(await fetch(A,{method:"POST",credentials:"include",headers:{"Content-Type":"application/json",Store:P},body:JSON.stringify({query:"mutation { createEmptyCart }"})})).json())?.data?.createEmptyCart||null}catch(e){console.error("[Jim2] getCartId error:",e)}return L}async function It(e){try{let a=new URL(e).pathname.replace(/^\//,"").replace(/\.html$/,"");if(!a)return null;let o=(await(await fetch(A,{method:"POST",credentials:"include",headers:{"Content-Type":"application/json",Store:P},body:JSON.stringify({query:`{ products(filter: { url_key: { match: "${a}" } }) { items { url_key sku name __typename stock_status price_range { minimum_price { final_price { value currency } } } ... on ConfigurableProduct { configurable_options { attribute_id label values { label value_index uid } } } } } }`})})).json())?.data?.products?.items||[],s=o.find(d=>d.url_key===a)||o[0];if(!s)return null;let l=s.price_range?.minimum_price?.final_price;return{sku:s.sku,name:s.name,type:s.__typename,inStock:s.stock_status==="IN_STOCK",price:l?`${l.value.toFixed(2)} ${l.currency==="EUR"?"\u20AC":l.currency}`:"",options:s.configurable_options||[]}}catch(t){return console.error("[Jim2] lookupProductByUrl error:",t),null}}async function q(e,t=1,a=[]){let n=await Lt();if(!n)return{success:!1,error:"Nepodarilo sa z\xEDska\u0165 ko\u0161\xEDk"};try{let r={sku:e,quantity:t};a.length>0&&(r.parent_sku=e,r.selected_options=a);let s=await(await fetch(A,{method:"POST",credentials:"include",headers:{"Content-Type":"application/json",Store:P},body:JSON.stringify({query:`mutation AddToCart($cartId: String!, $items: [CartItemInput!]!) {
+            addProductsToCart(cartId: $cartId, cartItems: $items) {
+              cart { total_quantity }
+              user_errors { code message }
+            }
+          }`,variables:{cartId:n,items:[r]}})})).json(),l=s?.data?.addProductsToCart;return l?.user_errors?.length>0?{success:!1,error:l.user_errors[0].message}:l?.cart?{success:!0,totalQty:l.cart.total_quantity}:{success:!1,error:s?.errors?.[0]?.message||"Nezn\xE1ma chyba"}}catch(r){return{success:!1,error:r.message}}}async function Kt(e){let t=e.map(async a=>{try{let r=new URL(a.url).pathname.replace(/^\//,"").replace(/\.html$/,"");if(!r)return;let l=(await(await fetch(A,{method:"POST",credentials:"include",headers:{"Content-Type":"application/json",Store:P},body:JSON.stringify({query:`{ products(filter: { url_key: { match: "${r}" } }, pageSize: 5) { items { url_key stock_status rating_summary rating_summary_scale review_count price_range { minimum_price { final_price { value currency } } } } } }`})})).json())?.data?.products?.items||[],d=l.find(m=>m.url_key===r)||l[0];if(!d)return;let c=d.price_range?.minimum_price?.final_price;if(a.price=c?`${c.value.toFixed(2).replace(".",",")} \u20AC`:"",a._inStock=d.stock_status==="IN_STOCK",d.rating_summary_scale){let m=parseFloat(d.rating_summary_scale);Number.isNaN(m)||(a.rating=m)}else typeof d.rating_summary=="number"&&d.rating_summary>0&&(a.rating=d.rating_summary/20);typeof d.review_count=="number"&&d.review_count>0&&(a.review_count=d.review_count),console.log("[Jim2] enrich",a.name,"\u2192 rating:",a.rating,"count:",a.review_count,"price:",a.price)}catch(n){console.warn("[Jim2] enrich error",a.name,n)}});await Promise.all(t),i.panelContent?.type==="products"&&(document.getElementById("jim2-a-panel").innerHTML=pe(),me())}let z=null,D=[],O=!1;async function _t(e,t){if(O){z.stop();return}try{let a=await navigator.mediaDevices.getUserMedia({audio:!0}),n=MediaRecorder.isTypeSupported("audio/webm;codecs=opus")?"audio/webm;codecs=opus":MediaRecorder.isTypeSupported("audio/webm")?"audio/webm":"audio/mp4";z=new MediaRecorder(a,{mimeType:n}),D=[],O=!0,e.classList.add("jim2-mic-recording"),t.placeholder="Nahr\xE1vam... klikni \u{1F399}\uFE0F pre ukon\u010Denie",z.ondataavailable=r=>{r.data.size>0&&D.push(r.data)},z.onstop=async()=>{O=!1,e.classList.remove("jim2-mic-recording"),t.placeholder="Prepisujem...",a.getTracks().forEach(l=>l.stop());let r=new Blob(D,{type:n}),o=new FormData,s=n.includes("webm")?"webm":"mp4";o.append("audio",r,`voice.${s}`),o.append("language","sk");try{let d=await(await fetch(`${x}/transcribe`,{method:"POST",body:o})).json();d.text?(t.value="",t.placeholder=g().placeholder,t.focus(),w(d.text)):(t.placeholder=g().placeholder,d.error&&console.warn("[Jim2] Transcribe error:",d.error))}catch(l){console.error("[Jim2] Transcribe fetch error:",l),t.placeholder=g().placeholder}D=[],z=null},z.start()}catch(a){console.error("[Jim2] Microphone access error:",a),t.placeholder=g().placeholder}}let Mt=/^(www\.|[a-z]{2}\.)?gymbeam\.(sk|cz|hu|ro|bg|de|pl|hr|si|com)$/i;function Wt(e){try{let t=new URL(e);return t.protocol!=="https:"&&t.protocol!=="http:"?!1:Mt.test(t.host)}catch{return!1}}function we(e){try{let t=new URL(e,window.location.origin),a=/^(utm_|fbclid|gclid|gbraid|wbraid|msclkid|mc_eid|mc_cid|_ga|igshid|ttclid|yclid|dclid)/i;for(let n of[...t.searchParams.keys()])a.test(n)&&t.searchParams.delete(n);return t.hash&&(t.hash=t.hash.split(/[?&]/)[0]),t.toString()}catch{return e}}function Et(e){try{fetch(`${x}/event`,{method:"POST",keepalive:!0,headers:{"Content-Type":"application/json"},body:JSON.stringify({session_id:j,type:"link_click",market:k.market||window.location.hostname,...e})}).catch(()=>{})}catch{}}function Jt(e){return u(e).split(`
+`).map(a=>{let n=a.trim();if(!n)return'<div class="jim2-spacer"></div>';let r=n.match(/^([—\-\*•]|\d+[.):])\s+(.*)/),o=r?r[2]:a;return o=o.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,'<a class="jim2-msg-link" href="$2" target="_blank" rel="noopener" data-product-link="1">$1</a>'),o=o.replace(/(?<!href=["'])https?:\/\/[^\s<>"]+/g,s=>`<a class="jim2-msg-link" href="${s}" target="_blank" rel="noopener" data-product-link="1">${s}</a>`),o=o.replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>"),o=o.replace(/\*(.+?)\*/g,"<em>$1</em>"),r?`<div class="jim2-list-item"><span class="jim2-bullet">${r[1]}</span><span>${o}</span></div>`:`<div>${o}</div>`}).join("")}function u(e){return e?String(e).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"):""}function xe(e){return/^https?:\/\//i.test(e||"")?u(e):"#"}function Bt(){Ve(),Je(),Ue(),et()}function $(e=0){Bt(),!!!document.querySelector('[data-test="pdp-add-to-cart-main"], button[title="Prida\u0165 do ko\u0161\xEDka"]')&&e<10&&setTimeout(()=>$(e+1),500)}let ze=location.href;new MutationObserver(()=>{location.href!==ze&&(ze=location.href,setTimeout(()=>$(0),800))}).observe(document.body,{childList:!0,subtree:!0}),document.readyState==="complete"?setTimeout(()=>$(0),500):window.addEventListener("load",()=>setTimeout(()=>$(0),500))})();})();
